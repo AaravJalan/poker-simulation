@@ -54,9 +54,11 @@
 }
 
 .sidebar-link {
-  display: block;
-  padding: 0.6rem 1.25rem;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
   margin: 0 0.75rem;
+  min-height: 44px;
   color: var(--neu-text);
   text-decoration: none;
   font-size: 0.95rem;
@@ -83,7 +85,8 @@
 
 .sidebar-btn {
   width: 100%;
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem;
+  min-height: 44px;
   border: none;
   background: var(--neu-bg);
   box-shadow: 3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
@@ -100,4 +103,10 @@
 
 .logout-btn {
   color: var(--neu-text-muted);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: min(280px, 85vw);
+  }
 }

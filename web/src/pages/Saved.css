@@ -5,6 +5,12 @@
   margin: 0 auto;
 }
 
+@media (max-width: 640px) {
+  .saved-page {
+    padding: 1rem;
+  }
+}
+
 .saved-header {
   display: flex;
   justify-content: space-between;

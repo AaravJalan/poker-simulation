@@ -3,6 +3,12 @@
   max-width: 500px;
 }
 
+@media (max-width: 480px) {
+  .friends-page {
+    padding: 1rem;
+  }
+}
+
 .friends-header {
   display: flex;
   justify-content: space-between;

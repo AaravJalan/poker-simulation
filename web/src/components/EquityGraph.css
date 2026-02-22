@@ -15,10 +15,17 @@
 
 .equity-graph-svg-wrap {
   height: 140px;
+  min-height: 100px;
   background: var(--neu-bg);
   border-radius: var(--neu-radius-sm);
   box-shadow: inset 2px 2px 4px var(--neu-shadow-dark);
   overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .equity-graph-svg-wrap {
+    height: 120px;
+  }
 }
 
 .equity-graph-svg {

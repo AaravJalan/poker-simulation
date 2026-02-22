@@ -37,6 +37,12 @@
   box-shadow: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
 }
 
+@media (max-width: 640px) {
+  .section {
+    padding: 1rem 1.25rem;
+  }
+}
+
 .section h2 {
   font-size: 1.05rem;
   font-weight: 600;
@@ -55,6 +61,8 @@
 .card-btn {
   aspect-ratio: 2.5/3.5;
   max-width: 48px;
+  min-width: 0;
+  min-height: 36px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
@@ -68,6 +76,8 @@
   background: var(--neu-bg);
   box-shadow: 3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
   color: var(--neu-text);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .card-btn:hover {
@@ -114,6 +124,24 @@
   gap: 1rem;
   align-items: center;
   margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .controls-row .control-group {
+    flex: 1;
+  }
+  .controls-row .control-group .neu-input {
+    flex: 1;
+    min-width: 0;
+  }
+  .controls-row .neu-btn-primary {
+    min-height: 44px;
+  }
 }
 
 .control-group {
@@ -216,6 +244,13 @@
   flex-wrap: nowrap;
 }
 
+@media (max-width: 640px) {
+  .selected-cards-inline {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
 .selected-cards-inline .scan-inline {
   margin-left: auto;
   padding: 0.4rem 0.6rem;
@@ -244,6 +279,23 @@
     grid-template-columns: repeat(13, 1fr);
     gap: 4px;
   }
-  .card-btn { max-width: 36px; font-size: 0.65rem; }
-  .results-grid { grid-template-columns: 1fr; }
+  .card-btn {
+    max-width: 36px;
+    font-size: 0.65rem;
+    min-height: 32px;
+  }
+  .results-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .card-picker-grid {
+    gap: 3px;
+  }
+  .card-btn {
+    max-width: 32px;
+    font-size: 0.6rem;
+  }
 }

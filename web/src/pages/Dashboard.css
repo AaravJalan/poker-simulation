@@ -5,6 +5,12 @@
   margin: 0 auto;
 }
 
+@media (max-width: 640px) {
+  .dashboard {
+    padding: 1rem 0.75rem;
+  }
+}
+
 .dashboard-header {
   margin-bottom: 1.5rem;
 }
@@ -12,6 +18,12 @@
 .dashboard-header h1 {
   font-size: 1.75rem;
   margin: 0 0 0.25rem 0;
+}
+
+@media (max-width: 640px) {
+  .dashboard-header h1 {
+    font-size: 1.4rem;
+  }
 }
 
 .dashboard-header .subtitle {
@@ -59,6 +71,17 @@
   grid-template-columns: 80px 1fr 55px;
   align-items: center;
   gap: 0.75rem;
+}
+
+@media (max-width: 420px) {
+  .equity-bar-wrap {
+    grid-template-columns: 60px 1fr 45px;
+    gap: 0.5rem;
+    font-size: 0.9em;
+  }
+  .equity-pct {
+    font-size: 0.8rem;
+  }
 }
 
 .street-label {
@@ -179,6 +202,13 @@
   font-size: 0.85rem;
 }
 
+@media (max-width: 420px) {
+  .dist-row {
+    grid-template-columns: 80px 1fr 38px;
+    font-size: 0.8rem;
+  }
+}
+
 .dist-bar-bg {
   height: 8px;
   border-radius: 4px;
@@ -205,6 +235,13 @@
   border-radius: var(--neu-radius-sm);
   font-size: 0.9rem;
   margin-bottom: 1rem;
+}
+
+@media (max-width: 480px) {
+  .api-banner {
+    font-size: 0.85rem;
+    padding: 0.875rem 1rem;
+  }
 }
 
 .api-banner code {
@@ -242,6 +279,17 @@
   gap: 1rem;
 }
 
+@media (max-width: 400px) {
+  .action-tile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .action-value {
+    font-size: 1.1rem;
+  }
+}
+
 .action-label {
   font-size: 0.9rem;
   color: var(--neu-text-muted);
@@ -267,14 +315,23 @@
 
 .sim-chat-wrap {
   position: fixed;
-  top: 1rem;
-  right: 1.5rem;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
   z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .sim-chat-wrap {
+    top: calc(44px + max(0.75rem, env(safe-area-inset-top)) + 0.25rem);
+    right: max(0.75rem, env(safe-area-inset-right));
+  }
 }
 
 .ai-chat-fab {
   width: 56px;
   height: 56px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
   border: none;
   font-size: 1.5rem;
@@ -283,8 +340,14 @@
   align-items: center;
   justify-content: center;
   transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .ai-chat-fab:hover {
   transform: scale(1.05);
+}
+
+.ai-chat-fab:active {
+  transform: scale(0.95);
 }

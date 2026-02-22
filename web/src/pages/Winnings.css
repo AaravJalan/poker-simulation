@@ -1,5 +1,6 @@
 .winnings-page { padding: 1.5rem; max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-@media (max-width: 768px) { .winnings-page { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .winnings-page { grid-template-columns: 1fr; padding: 1rem; } }
+@media (max-width: 480px) { .winnings-page { padding: 0.75rem; } }
 .winnings-main { grid-column: 1; }
 .winnings-graph-wrap { grid-column: 2; position: sticky; top: 1rem; }
 @media (max-width: 768px) { .winnings-graph-wrap { grid-column: 1; position: static; } }

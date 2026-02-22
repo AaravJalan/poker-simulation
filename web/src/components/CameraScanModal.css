@@ -7,6 +7,23 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 480px) {
+  .camera-modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-end;
+  }
+  .camera-modal {
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
+  .camera-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .camera-modal {

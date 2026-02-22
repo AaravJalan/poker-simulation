@@ -82,6 +82,19 @@
 }
 
 @media (max-width: 480px) {
-  .ai-chat-panel-overlay { padding: 0; align-items: stretch; }
-  .ai-chat-panel { max-width: none; max-height: 85vh; }
+  .ai-chat-panel-overlay {
+    padding: 0;
+    align-items: stretch;
+    padding-top: env(safe-area-inset-top);
+  }
+  .ai-chat-panel {
+    max-width: none;
+    max-height: 85vh;
+    max-height: 85dvh;
+    border-radius: var(--neu-radius-sm) var(--neu-radius-sm) 0 0;
+  }
+  .ai-chat-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }

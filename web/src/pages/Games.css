@@ -251,12 +251,16 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
 .modal {
   padding: 1.5rem;
   border-radius: var(--neu-radius-sm);
   min-width: 280px;
+  max-width: calc(100vw - 2rem);
 }
 
 .modal h3 {
