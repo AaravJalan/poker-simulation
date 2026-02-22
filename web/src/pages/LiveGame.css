@@ -1,0 +1,143 @@
+.live-game-page {
+  padding: 1rem;
+  max-width: 400px;
+}
+
+.live-game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.live-game-header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.live-game-desc {
+  font-size: 0.9rem;
+  color: var(--neu-text-muted);
+  margin: 0 0 1rem 0;
+}
+
+.live-game-totals {
+  padding: 1rem;
+  border-radius: var(--neu-radius-sm);
+  margin-bottom: 1rem;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.totals-row.total-profit {
+  font-weight: 700;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--neu-shadow-dark);
+}
+
+.totals-row.win { color: var(--neu-success); }
+.totals-row.loss { color: var(--neu-danger); }
+
+.live-game-players {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-card {
+  padding: 1rem;
+  border-radius: var(--neu-radius-sm);
+  position: relative;
+}
+
+.player-name {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.player-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.player-inputs label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--neu-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.player-inputs .neu-input {
+  width: 100%;
+}
+
+.player-profit {
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.player-profit.win { color: var(--neu-success); }
+.player-profit.loss { color: var(--neu-danger); }
+
+.remove-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--neu-text-muted);
+  cursor: pointer;
+  padding: 0.15rem;
+}
+
+.remove-btn:hover:not(:disabled) {
+  color: var(--neu-danger);
+}
+
+.add-player-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.add-player-row .neu-input {
+  flex: 1;
+}
+
+.settlements {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: var(--neu-radius-sm);
+}
+
+.settlements h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+}
+
+.settlement-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.settlement-row .from { color: var(--neu-danger); }
+.settlement-row .to { color: var(--neu-success); }
+.settlement-row .arrow { color: var(--neu-text-muted); }
+.settlement-row .amount { font-weight: 700; margin-left: auto; }
+
+@media (max-width: 480px) {
+  .live-game-page { padding: 0.75rem; }
+  .live-game-header { flex-direction: column; gap: 0.5rem; align-items: stretch; }
+  .player-inputs { grid-template-columns: 1fr; }
+}

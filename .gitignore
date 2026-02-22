@@ -1,0 +1,46 @@
+# Build outputs
+build/
+out/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+
+# Python
+__pycache__/
+python/poker_users.db
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+*.egg
+
+# Node / React
+node_modules/
+web/dist/
+web/.env.local
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# pybind11 (if using submodule, keep; if FetchContent, ignore)
+# extern/
+
+# Environment
+.env
+.env.*
+!.env.example

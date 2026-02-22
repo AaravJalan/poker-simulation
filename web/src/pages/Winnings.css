@@ -1,0 +1,42 @@
+.winnings-page { padding: 1.5rem; max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 768px) { .winnings-page { grid-template-columns: 1fr; } }
+.winnings-main { grid-column: 1; }
+.winnings-graph-wrap { grid-column: 2; position: sticky; top: 1rem; }
+@media (max-width: 768px) { .winnings-graph-wrap { grid-column: 1; position: static; } }
+.winnings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.winnings-header h1 { margin: 0; font-size: 1.5rem; }
+.winnings-filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.winnings-filters .neu-btn.active { background: linear-gradient(145deg, var(--neu-accent), var(--neu-accent-hover)); color: white; }
+.winnings-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; padding: 1rem; margin-bottom: 1rem; border-radius: var(--neu-radius-sm); }
+.winnings-graph { padding: 1rem; margin-bottom: 1rem; border-radius: var(--neu-radius-sm); }
+.winnings-graph h3 { margin: 0 0 1rem 0; font-size: 1rem; }
+.graph-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+.graph-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
+.graph-label { font-size: 0.85rem; min-width: 5rem; }
+.graph-bar-bg { flex: 1; height: 1.25rem; background: var(--neu-shadow-dark); border-radius: 4px; overflow: hidden; }
+.graph-bar-fill { height: 100%; transition: width 0.3s; }
+.graph-bar-fill.win { background: var(--neu-success); }
+.graph-bar-fill.loss { background: var(--neu-danger); }
+.graph-value { font-size: 0.9rem; font-weight: 600; min-width: 3rem; text-align: right; }
+.graph-line-wrap { height: 180px; position: relative; margin-top: 0.5rem; }
+.graph-line-svg { width: 100%; height: 100%; display: block; }
+.graph-line-labels { display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.75rem; color: var(--neu-text-muted); }
+.winnings-error { color: var(--neu-danger); font-size: 0.9rem; margin: 0.5rem 0; }
+.winnings-stats .stat { text-align: center; }
+.stat-label { display: block; font-size: 0.8rem; color: var(--neu-text-muted); }
+.stat-value { font-size: 1.25rem; font-weight: 700; }
+.stat-value.win { color: var(--neu-success); }
+.stat-value.loss { color: var(--neu-danger); }
+.winnings-form { padding: 1.25rem; margin-bottom: 1rem; border-radius: var(--neu-radius-sm); }
+.form-row { margin-bottom: 1rem; }
+.form-row label { display: block; font-size: 0.9rem; margin-bottom: 0.25rem; color: var(--neu-text-muted); }
+.form-row .neu-input { width: 100%; }
+.winnings-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.winnings-item { padding: 1rem; border-radius: var(--neu-radius-sm); position: relative; }
+.item-date { font-weight: 600; margin-bottom: 0.25rem; }
+.item-details .profit { margin-left: 0.5rem; font-weight: 700; }
+.item-details .profit.win { color: var(--neu-success); }
+.item-details .profit.loss { color: var(--neu-danger); }
+.item-notes { font-size: 0.9rem; color: var(--neu-text-muted); margin-top: 0.25rem; }
+.winnings-item .delete-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; color: var(--neu-text-muted); cursor: pointer; font-size: 0.8rem; }
+.winnings-item .delete-btn:hover { color: var(--neu-danger); }

@@ -1,0 +1,260 @@
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 3rem;
+}
+
+.login-page.potbot-style {
+  gap: 1.5rem;
+}
+
+.login-page.login-form-only {
+  justify-content: center;
+}
+
+.login-theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--neu-bg);
+  border: none;
+  box-shadow: 3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
+  border-radius: var(--neu-radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.login-theme-toggle:hover {
+  transform: scale(1.05);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.login-logo {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.login-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.login-tagline {
+  color: var(--neu-text-muted);
+  font-size: 0.95rem;
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+.login-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-cta {
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--neu-radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.login-cta:hover {
+  transform: translateY(-1px);
+}
+
+.primary-cta {
+  background: linear-gradient(145deg, #fdd663, #f5c842);
+  color: #1a1d23;
+  border: none;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.secondary-cta {
+  background: transparent;
+  color: var(--neu-text);
+  border: 1px solid var(--neu-text-muted);
+}
+
+.secondary-cta:hover {
+  border-color: var(--neu-accent);
+  color: var(--neu-accent);
+}
+
+.google-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #fff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+}
+
+.google-cta:hover {
+  background: #f8f9fa;
+  border-color: #dadce0;
+  color: #202124;
+}
+
+.login-features-hint {
+  font-size: 0.85rem;
+  color: var(--neu-text-muted);
+  margin: 0 0 1rem 0;
+}
+
+.login-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  max-width: 700px;
+  width: 100%;
+}
+
+.login-feature-card {
+  padding: 1.25rem;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-bg);
+  box-shadow: inset 2px 2px 4px var(--neu-shadow-dark), inset -2px -2px 4px var(--neu-shadow-light);
+  text-align: center;
+}
+
+.login-feature-card .feature-icon {
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.login-feature-card h3 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.login-feature-card p {
+  font-size: 0.85rem;
+  color: var(--neu-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.login-back {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  color: var(--neu-accent);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.login-back:hover {
+  text-decoration: underline;
+}
+
+.login-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: var(--neu-radius);
+}
+
+.login-card h1,
+.login-card h2 {
+  font-size: 1.75rem;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.tagline {
+  text-align: center;
+  color: var(--neu-text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 2rem 0;
+}
+
+.login-card .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.login-card .form-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  color: var(--neu-text-muted);
+}
+
+.login-card .form-group .neu-input {
+  width: 100%;
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.google-icon {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.divider {
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--neu-text-muted);
+  font-size: 0.9rem;
+}
+
+.poker-id-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--neu-text);
+}
+
+.loading-spinner {
+  color: var(--neu-text-muted);
+}
+
+.switch-mode {
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--neu-accent);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  color: var(--neu-accent-hover);
+}

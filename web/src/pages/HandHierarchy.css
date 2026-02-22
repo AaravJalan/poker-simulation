@@ -1,0 +1,91 @@
+.hand-hierarchy-page {
+  padding: 1.25rem;
+  max-width: 480px;
+  min-height: 100vh;
+}
+
+.hand-hierarchy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.hand-hierarchy-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--neu-accent), var(--neu-accent-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hand-hierarchy-intro {
+  font-size: 0.95rem;
+  color: var(--neu-text-muted);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.hand-hierarchy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hand-hierarchy-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--neu-radius-sm);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.hand-hierarchy-item:hover {
+  transform: translateY(-1px);
+}
+
+.hand-rank {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--neu-accent);
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(91, 124, 153, 0.12);
+  border-radius: 50%;
+}
+
+.hand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.hand-info strong {
+  font-size: 1.05rem;
+  color: var(--neu-text);
+}
+
+.hand-desc {
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+  color: var(--neu-text);
+}
+
+.hand-ex {
+  font-size: 0.85rem;
+  color: var(--neu-text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .hand-hierarchy-page { padding: 1rem; }
+  .hand-hierarchy-header { flex-direction: column; gap: 0.75rem; align-items: stretch; }
+}
