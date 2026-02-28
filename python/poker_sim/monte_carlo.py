@@ -74,22 +74,15 @@ def run_monte_carlo(
             opp_hands.append([deck[idx], deck[idx + 1]])
             idx += 2
         hero_hand = list(hole_cards) + board_final
-        hero_value = None
-        best_opp_value = None
+        hero_value = 1  # assume win until we lose or tie
         for opp in opp_hands:
             opp_hand = opp + board_final
             cmp = compare_hands(hero_hand, opp_hand)
-            if cmp > 0:
-                hero_value = 1
-                break
             if cmp < 0:
-                if best_opp_value is None or best_opp_value < -1:
-                    best_opp_value = -1
-            else:
-                if best_opp_value is None:
-                    best_opp_value = 0
-        if hero_value is None:
-            hero_value = best_opp_value if best_opp_value is not None else 0
+                hero_value = -1
+                break  # loss: at least one opponent beats us
+            if cmp == 0:
+                hero_value = 0  # tie: at least one opponent ties us (split pot)
         if hero_value > 0:
             wins += 1
         elif hero_value < 0:
@@ -99,6 +92,18 @@ def run_monte_carlo(
 
     from poker_sim.types import SimResult
     return SimResult(wins=wins, ties=ties, losses=losses, total=num_trials)
+
+
+def get_suggested_action(win_pct: float, tie_pct: float) -> str:
+    """Return suggested action: Raise, Bet, Check, or Check / Fold."""
+    equity = win_pct + tie_pct / 2
+    if equity >= 0.65:
+        return "Raise"
+    if equity >= 0.50:
+        return "Bet"
+    if equity >= 0.35:
+        return "Check"
+    return "Check / Fold"
 
 
 def get_strategy_message(win_pct: float, tie_pct: float) -> str:

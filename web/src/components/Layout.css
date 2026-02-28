@@ -1,7 +1,9 @@
 .layout {
   display: flex;
   min-height: 100vh;
+  height: 100vh;
   position: relative;
+  overflow: hidden;
 }
 
 .layout-menu-btn {
@@ -49,12 +51,13 @@
 .layout-sidebar {
   flex-shrink: 0;
   min-height: 100vh;
-  align-self: stretch;
 }
 
 .layout-main {
   flex: 1;
   overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 @media (max-width: 768px) {

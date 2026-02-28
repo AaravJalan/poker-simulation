@@ -58,10 +58,10 @@ body {
   min-height: 100vh;
 }
 
-/* Neumorphic raised (outset) */
+/* Neumorphic raised (outset) - reduced glow */
 .neu-raised {
   background: var(--neu-bg);
-  box-shadow: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
+  box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
   border-radius: var(--neu-radius);
   border: none;
 }

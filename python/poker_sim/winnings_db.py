@@ -75,6 +75,6 @@ def get_entries(user_id: str, period: str = "all") -> list:
 
 def delete_entry(user_id: str, entry_id: str) -> bool:
     init_db()
-    with _conn() as c:
-        c.execute("DELETE FROM winnings WHERE id = ? AND user_id = ?", (entry_id, user_id))
-        return c.rowcount > 0
+    with _conn() as conn:
+        cur = conn.execute("DELETE FROM winnings WHERE id = ? AND user_id = ?", (entry_id, user_id))
+        return cur.rowcount > 0

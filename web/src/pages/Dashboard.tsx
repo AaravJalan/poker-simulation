@@ -25,6 +25,7 @@ interface SimResult {
   win_pct: number
   tie_pct: number
   loss_pct: number
+  suggested_action: string
   strategy_message: string
   elapsed_ms?: number
 }
@@ -49,6 +50,8 @@ interface LiveAnalysisData {
   win_pct?: number
   tie_pct?: number
   loss_pct?: number
+  suggested_action?: string
+  strategy_message?: string
   hand_distribution?: Record<string, number>
   best_possible_hand?: string
   current_hand?: string | null
@@ -372,7 +375,7 @@ export default function Dashboard() {
             </div>
             <div className="control-group">
               <label>Trials</label>
-              <input type="number" min={100} max={500000} step={1000} value={numTrials} onChange={(e) => setNumTrials(Number(e.target.value) || 1000)} className="neu-input" />
+              <input type="number" min={10} max={500000} step={100} value={numTrials} onChange={(e) => setNumTrials(Number(e.target.value) || 10)} className="neu-input" />
             </div>
             <button type="button" className="neu-btn neu-btn-primary" onClick={runSimulation} disabled={loading || holeCards.length !== 2 || ![0, 3, 4, 5].includes(boardCards.length)}>
               {loading ? 'Running…' : 'Run simulation'}
@@ -389,8 +392,8 @@ export default function Dashboard() {
               <>
                 <div className="action-tile neu-raised">
                   <span className="action-label">Suggested action</span>
-                  <strong className={`action-value ${((liveAnalysis.win_pct ?? 0) + (liveAnalysis.tie_pct ?? 0) / 2) >= 0.5 ? 'bet' : 'check-fold'}`}>
-                    {((liveAnalysis.win_pct ?? 0) + (liveAnalysis.tie_pct ?? 0) / 2) >= 0.5 ? 'Bet' : 'Check / Fold'}
+                  <strong className={`action-value action-${(liveAnalysis.suggested_action ?? '').toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-') || 'check-fold'}`}>
+                    {liveAnalysis.suggested_action ?? (((liveAnalysis.win_pct ?? 0) + (liveAnalysis.tie_pct ?? 0) / 2) >= 0.5 ? 'Bet' : 'Check / Fold')}
                   </strong>
                 </div>
                 <div className="results-grid">
@@ -563,8 +566,8 @@ export default function Dashboard() {
           <section className="section">
             <div className="action-tile neu-raised">
               <span className="action-label">Suggested action</span>
-              <strong className={`action-value ${(result.win_pct + result.tie_pct / 2) >= 0.5 ? 'bet' : 'check-fold'}`}>
-                {(result.win_pct + result.tie_pct / 2) >= 0.5 ? 'Bet' : 'Check / Fold'}
+              <strong className={`action-value action-${(result.suggested_action ?? '').toLowerCase().replace(/ \/ /g, '-').replace(/ /g, '-') || 'check-fold'}`}>
+                {result.suggested_action ?? ((result.win_pct + result.tie_pct / 2) >= 0.5 ? 'Bet' : 'Check / Fold')}
               </strong>
             </div>
             <h2>Results</h2>

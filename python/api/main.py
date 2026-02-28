@@ -20,8 +20,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 try:
-    from poker_sim import run_monte_carlo, get_strategy_message
-    from poker_sim.equity import equity_at_each_street, describe_hand, hands_that_beat, get_potential_draws
+    from poker_sim import run_monte_carlo, get_strategy_message, get_suggested_action
+    from poker_sim.equity import equity_at_each_street, describe_hand, possible_hands_that_beat, get_potential_draws
     from poker_sim.live_analysis import live_analysis
 except ImportError as e:
     raise RuntimeError(
@@ -50,13 +50,14 @@ class SimulateRequest(BaseModel):
     hole_cards: list[int] = Field(..., min_length=2, max_length=2, description="2 card indices 0–51")
     board: list[int] = Field(default_factory=list, max_length=5, description="0, 3, 4, or 5 card indices")
     num_opponents: int = Field(default=1, ge=1, le=8)
-    num_trials: int = Field(default=10000, ge=100, le=500000)
+    num_trials: int = Field(default=10000, ge=10, le=500000)
 
 
 class SimulateResponse(BaseModel):
     win_pct: float
     tie_pct: float
     loss_pct: float
+    suggested_action: str
     strategy_message: str
     elapsed_ms: float | None = None
 
@@ -540,6 +541,7 @@ class LiveAnalysisRequest(BaseModel):
 @app.post("/api/live-analysis")
 def api_live_analysis(req: LiveAnalysisRequest):
     """Live analysis for 1-7 cards: win %, hand distribution, best possible hand."""
+    from poker_sim import get_strategy_message, get_suggested_action
     t0 = time.perf_counter()
     try:
         data = live_analysis(
@@ -550,6 +552,9 @@ def api_live_analysis(req: LiveAnalysisRequest):
         elapsed = time.perf_counter() - t0
         logger.info(f"Live analysis: {len(req.cards)} cards, {req.num_trials} trials -> {elapsed:.3f}s")
         data["elapsed_ms"] = elapsed * 1000
+        if "win_pct" in data and "tie_pct" in data:
+            data["suggested_action"] = get_suggested_action(data["win_pct"], data["tie_pct"])
+            data["strategy_message"] = get_strategy_message(data["win_pct"], data["tie_pct"])
         return data
     except Exception as e:
         logger.exception("Live analysis failed")
@@ -586,7 +591,7 @@ def analyze(req: AnalyzeRequest):
         if len(all_cards) < 5:
             return AnalyzeResponse(hand_name="Need 5+ cards", hands_that_beat=[], potential_draws=[])
         desc = describe_hand(all_cards)
-        beat_by = hands_that_beat(desc["hand_type_id"]) if desc["hand_type_id"] >= 0 else []
+        beat_by = possible_hands_that_beat(req.hole_cards, req.board) if desc["hand_type_id"] >= 0 else []
         draws = get_potential_draws(req.hole_cards, req.board)
         elapsed = time.perf_counter() - t0
         logger.info(f"Analyze: {elapsed:.3f}s")
@@ -624,6 +629,7 @@ def simulate(req: SimulateRequest):
         win_pct=win_pct,
         tie_pct=tie_pct,
         loss_pct=result.loss_rate(),
+        suggested_action=get_suggested_action(win_pct, tie_pct),
         strategy_message=get_strategy_message(win_pct, tie_pct),
         elapsed_ms=elapsed * 1000,
     )

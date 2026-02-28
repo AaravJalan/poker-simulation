@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { apiUrl } from '../lib/api'
 import './CameraScanModal.css'
 
-const AUTO_CAPTURE_INTERVAL_MS = 500
+const AUTO_CAPTURE_INTERVAL_MS = 600
 
 interface Box {
   x: number
@@ -57,7 +57,7 @@ export default function CameraScanModal({
     setError(null)
     try {
       const canvas = document.createElement('canvas')
-      const maxDim = 640
+      const maxDim = 800
       let w = video.videoWidth
       let h = video.videoHeight
       if (!w || !h) return
@@ -143,24 +143,41 @@ export default function CameraScanModal({
   useEffect(() => {
     const video = videoRef.current
     const overlay = overlayRef.current
-    if (!video || !overlay || boxes.length === 0 || !imgSize.w) return
+    if (!video || !overlay || boxes.length === 0 || !imgSize.w || !imgSize.h) return
     const draw = () => {
       const rect = video.getBoundingClientRect()
       const vw = video.videoWidth
       const vh = video.videoHeight
-      if (!vw || !vh) return
+      if (!vw || !vh || !rect.width || !rect.height) return
       overlay.width = rect.width
       overlay.height = rect.height
       const ctx = overlay.getContext('2d')
       if (!ctx) return
       ctx.clearRect(0, 0, overlay.width, overlay.height)
-      const scaleX = overlay.width / imgSize.w
-      const scaleY = overlay.height / imgSize.h
-      ctx.strokeStyle = 'rgba(0, 255, 100, 0.9)'
-      ctx.lineWidth = 3
+      // Map from capture image coords (imgSize) to overlay, respecting aspect ratio
+      const imgAspect = imgSize.w / imgSize.h
+      const rectAspect = rect.width / rect.height
+      let drawW: number, drawH: number, offsetX: number, offsetY: number
+      if (imgAspect > rectAspect) {
+        drawW = rect.width
+        drawH = rect.width / imgAspect
+        offsetX = 0
+        offsetY = (rect.height - drawH) / 2
+      } else {
+        drawH = rect.height
+        drawW = rect.height * imgAspect
+        offsetX = (rect.width - drawW) / 2
+        offsetY = 0
+      }
+      const scaleX = drawW / imgSize.w
+      const scaleY = drawH / imgSize.h
+      ctx.strokeStyle = 'rgba(0, 255, 100, 0.95)'
+      ctx.lineWidth = 4
+      ctx.setLineDash([])
       boxes.forEach((b) => {
-        const ox = overlay.width - (b.x + b.w) * scaleX
-        ctx.strokeRect(ox, b.y * scaleY, b.w * scaleX, b.h * scaleY)
+        const x = offsetX + (imgSize.w - b.x - b.w) * scaleX
+        const y = offsetY + b.y * scaleY
+        ctx.strokeRect(x, y, b.w * scaleX, b.h * scaleY)
       })
     }
     draw()

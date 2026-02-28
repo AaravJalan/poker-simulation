@@ -1,3 +1,8 @@
+.profile-menu-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .profile-menu {
   position: absolute;
   top: 100%;
@@ -69,4 +74,43 @@
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+/* Modal popup for rename / change password */
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+}
+
+.profile-modal {
+  background: var(--neu-bg);
+  border-radius: var(--neu-radius-sm);
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  min-width: 280px;
+  max-width: 400px;
+}
+
+.profile-modal .profile-menu-form {
+  padding: 0;
+}
+
+.profile-modal .profile-menu-form h4 {
+  margin: 0 0 1rem 0;
+}
+
+.profile-modal .profile-menu-form .neu-input {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.profile-modal .profile-menu-actions {
+  margin-top: 1rem;
+  justify-content: flex-end;
 }

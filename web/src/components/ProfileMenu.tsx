@@ -64,8 +64,11 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
 
   const showProfileEdit = true
 
+  const showPopup = mode === 'username' || mode === 'password'
+
   return (
-    <div ref={menuRef} className="profile-menu">
+    <>
+    <div ref={menuRef} className={`profile-menu ${showPopup ? 'profile-menu-hidden' : ''}`} onClick={(e) => e.stopPropagation()}>
       {mode === 'menu' && (
         <>
           <div className="profile-menu-user">
@@ -74,70 +77,49 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
           </div>
           {showProfileEdit && (
             <>
-              <button type="button" className="profile-menu-item" onClick={() => setMode('username')}>
+              <button type="button" className="profile-menu-item" onClick={(e) => { e.stopPropagation(); setMode('username'); }}>
                 Rename profile
               </button>
-              <button type="button" className="profile-menu-item" onClick={() => { setMode('password'); setNewUsername(''); setNewPassword(''); setError(''); }}>
+              <button type="button" className="profile-menu-item" onClick={(e) => { e.stopPropagation(); setMode('password'); setNewUsername(''); setNewPassword(''); setError(''); }}>
                 Change password
               </button>
             </>
           )}
         </>
       )}
-      {mode === 'username' && (
-        <form onSubmit={handleUpdateUsername} className="profile-menu-form">
-          <h4>Change username</h4>
-          {!supabaseConfigured && (
-            <input
-              type="password"
-              placeholder="Current password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="neu-input"
-              required
-            />
-          )}
-          <input
-            type="text"
-            placeholder="New username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            className="neu-input"
-            required
-          />
-          {error && <p className="profile-menu-error">{error}</p>}
-          <div className="profile-menu-actions">
-            <button type="button" className="neu-btn" onClick={() => setMode('menu')}>Cancel</button>
-            <button type="submit" className="neu-btn neu-btn-primary">Save</button>
-          </div>
-        </form>
-      )}
-      {mode === 'password' && (
-        <form onSubmit={handleUpdatePassword} className="profile-menu-form">
-          <h4>Change password</h4>
-          <input
-            type="password"
-            placeholder="Current password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            className="neu-input"
-            required
-          />
-          <input
-            type="password"
-            placeholder="New password (min 6 chars)"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="neu-input"
-            required
-          />
-          {error && <p className="profile-menu-error">{error}</p>}
-          <div className="profile-menu-actions">
-            <button type="button" className="neu-btn" onClick={() => setMode('menu')}>Cancel</button>
-            <button type="submit" className="neu-btn neu-btn-primary">Save</button>
-          </div>
-        </form>
-      )}
     </div>
+    {showPopup && (
+      <div className="profile-modal-overlay" onClick={() => { setMode('menu'); setError(''); onClose(); }} role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+        <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+          {mode === 'username' && (
+            <form onSubmit={handleUpdateUsername} className="profile-menu-form">
+              <h4 id="profile-modal-title">Change username</h4>
+              {!supabaseConfigured && (
+                <input type="password" placeholder="Current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="neu-input" required />
+              )}
+              <input type="text" placeholder="New username" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} className="neu-input" required />
+              {error && <p className="profile-menu-error">{error}</p>}
+              <div className="profile-menu-actions">
+                <button type="button" className="neu-btn" onClick={() => { setMode('menu'); onClose(); }}>Cancel</button>
+                <button type="submit" className="neu-btn neu-btn-primary">Save</button>
+              </div>
+            </form>
+          )}
+          {mode === 'password' && (
+            <form onSubmit={handleUpdatePassword} className="profile-menu-form">
+              <h4 id="profile-modal-title">Change password</h4>
+              <input type="password" placeholder="Current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="neu-input" required />
+              <input type="password" placeholder="New password (min 6 chars)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="neu-input" required />
+              {error && <p className="profile-menu-error">{error}</p>}
+              <div className="profile-menu-actions">
+                <button type="button" className="neu-btn" onClick={() => { setMode('menu'); onClose(); }}>Cancel</button>
+                <button type="submit" className="neu-btn neu-btn-primary">Save</button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    )}
+    </>
   )
 }

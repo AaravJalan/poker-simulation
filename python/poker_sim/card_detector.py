@@ -83,16 +83,16 @@ def detect_cards_with_boxes(image_bytes: bytes) -> tuple[List[int], List[tuple[i
 
 # --- Internal (adapted from Edje Cards.py) ---
 
-BKG_THRESH = 60
-CARD_THRESH = 30
+BKG_THRESH = 50
+CARD_THRESH = 35
 CORNER_WIDTH = 32
 CORNER_HEIGHT = 84
 RANK_WIDTH = 70
 RANK_HEIGHT = 125
 SUIT_WIDTH = 70
 SUIT_HEIGHT = 100
-RANK_DIFF_MAX = 5000
-SUIT_DIFF_MAX = 1800
+RANK_DIFF_MAX = 5500
+SUIT_DIFF_MAX = 2000
 CARD_MAX_AREA = 250000
 CARD_MIN_AREA = 5000
 

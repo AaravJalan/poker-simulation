@@ -132,3 +132,68 @@ def hands_that_beat(hero_hand_type: int) -> List[str]:
             stronger.append(name)
     return stronger
 
+
+def possible_hands_that_beat(hole_cards: List[int], board: List[int]) -> List[str]:
+    """Return hand types that could actually beat hero given hero's cards and board.
+    Filters out impossible hands based on deck/board constraints."""
+    from poker_sim.hand_eval import rank, suit
+    from collections import Counter
+    all_known = list(hole_cards) + list(board)
+    if len(all_known) < 5:
+        return []
+    ranks_known = Counter(rank(c) for c in all_known)
+    suits_known = Counter(suit(c) for c in all_known)
+    hero_ranks = Counter(rank(c) for c in hole_cards)
+    board_ranks = Counter(rank(c) for c in board)
+    board_suits = Counter(suit(c) for c in board)
+    desc = describe_hand(all_known)
+    hero_type = desc.get("hand_type_id", -1)
+    if hero_type < 0:
+        return []
+    possible = []
+    r_set = set(ranks_known.keys())
+    # Iterate stronger types in order (best first)
+    for ht in sorted(HAND_NAMES.keys()):
+        if ht <= hero_type:
+            continue
+        name = HAND_NAMES[ht]
+        if ht == STRAIGHT_FLUSH:
+            # Need 5 same suit. Opp needs 3+ of a suit on board + 2 in hand, or board 4+.
+            if any(cnt >= 3 for cnt in suits_known.values()):
+                possible.append(name)
+        elif ht == FOUR_KIND:
+            # Opp needs 4 of a rank. Possible iff: for some rank r, hero has 0 of r,
+            # and (board has 1 and 3 in deck) or (board has 2 and 2 in deck).
+            four_kind_poss = False
+            for r in range(13):
+                hr = hero_ranks.get(r, 0)
+                br = board_ranks.get(r, 0)
+                if hr > 0:
+                    continue
+                deck_count = 4 - br
+                if (br >= 1 and deck_count >= 3) or (br >= 2 and deck_count >= 2):
+                    four_kind_poss = True
+                    break
+            if four_kind_poss:
+                possible.append(name)
+        elif ht == FULL_HOUSE:
+            possible.append(name)
+        elif ht == FLUSH:
+            if any(cnt >= 3 for cnt in suits_known.values()):
+                possible.append(name)
+        elif ht == STRAIGHT:
+            ok = False
+            for high in [12, 11, 10, 9, 8, 7, 6, 5, 4, 3]:
+                needed = {(high - k) % 13 for k in range(5)}
+                if len(needed & r_set) >= 3:
+                    ok = True
+                    break
+            if not ok and len({12, 0, 1, 2, 3} & r_set) >= 3:
+                ok = True
+            if ok:
+                possible.append(name)
+        else:
+            # Three of a kind, two pair, one pair, high card: always possible
+            possible.append(name)
+    return possible
+

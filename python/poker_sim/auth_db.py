@@ -85,11 +85,11 @@ def update_username(user_id: str, new_username: str) -> dict:
     new_username = (new_username or "").strip()
     if not new_username:
         raise ValueError("Username cannot be empty")
-    with _conn() as c:
-        c.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
-        if c.rowcount == 0:
+    with _conn() as conn:
+        cur = conn.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, user_id))
+        if cur.rowcount == 0:
             raise ValueError("User not found")
-        row = c.execute("SELECT id, email, username FROM users WHERE id = ?", (user_id,)).fetchone()
+        row = conn.execute("SELECT id, email, username FROM users WHERE id = ?", (user_id,)).fetchone()
     name = row["username"] or row["email"].split("@")[0]
     return {"id": row["id"], "email": row["email"], "name": name}
 
@@ -106,5 +106,7 @@ def update_password(user_id: str, current_password: str, new_password: str) -> N
     if not bcrypt.checkpw(current_password.encode("utf-8"), row["password_hash"].encode("utf-8")):
         raise ValueError("Current password is incorrect")
     new_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    with _conn() as c:
-        c.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user_id))
+    with _conn() as conn:
+        cur = conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user_id))
+        if cur.rowcount == 0:
+            raise ValueError("User not found")

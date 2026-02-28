@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
+import { apiUrl } from '../lib/api'
 import ProfileMenu from './ProfileMenu'
 import './Sidebar.css'
 
@@ -11,9 +12,28 @@ interface SidebarProps {
 
 export default function Sidebar({ onNav }: SidebarProps) {
   const { user, logout } = useAuth()
+  const [inboxCount, setInboxCount] = useState(0)
   const { theme, toggleTheme } = useTheme()
   const [profileOpen, setProfileOpen] = useState(false)
   const profileAnchorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!user?.id) return
+    const refresh = () => {
+      fetch(apiUrl(`/api/friends/inbox?user_id=${encodeURIComponent(user.id)}`))
+        .then((r) => r.json())
+        .then((d) => setInboxCount((d.requests || []).length))
+        .catch(() => setInboxCount(0))
+    }
+    refresh()
+    const i = setInterval(refresh, 30000)
+    const handler = refresh
+    window.addEventListener('friends-inbox-update', handler)
+    return () => {
+      clearInterval(i)
+      window.removeEventListener('friends-inbox-update', handler)
+    }
+  }, [user?.id])
 
   return (
     <aside className="sidebar">
@@ -43,6 +63,7 @@ export default function Sidebar({ onNav }: SidebarProps) {
         </NavLink>
         <NavLink to="/friends" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
           Friends
+          {inboxCount > 0 && <span className="sidebar-badge" aria-label={`${inboxCount} pending request(s)`}>{inboxCount}</span>}
         </NavLink>
         <NavLink to="/hands" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
           Hand hierarchy

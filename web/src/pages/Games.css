@@ -1,6 +1,7 @@
 .games-page {
   padding: 1rem;
-  max-width: 480px;
+  max-width: 100%;
+  width: 100%;
 }
 
 .games-header {
@@ -122,12 +123,13 @@
 
 .game-detail-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: minmax(260px, 380px) 1fr;
+  gap: 2rem;
   align-items: start;
+  width: 100%;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .game-detail-layout {
     grid-template-columns: 1fr;
   }
@@ -139,13 +141,28 @@
   gap: 1rem;
 }
 
+.game-add-narrow {
+  max-width: 380px;
+}
+
 .game-players-section {
   position: sticky;
   top: 1rem;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 
 .game-players-section .game-players {
-  padding: 1rem;
+  padding: 1.5rem;
+  box-shadow: 2px 2px 6px var(--neu-shadow-dark), -2px -2px 6px var(--neu-shadow-light);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.game-players-section .player-card {
+  margin-bottom: 0;
 }
 
 .add-friends {
@@ -196,10 +213,28 @@
   margin-bottom: 1rem;
 }
 
-.player-card {
-  padding: 1rem;
+.game-players-title {
+  grid-column: 1 / -1;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.game-players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.game-players-grid > .player-card {
+  margin-bottom: 0;
+}
+
+.games-page .player-card {
+  padding: 1.25rem;
   border-radius: var(--neu-radius-sm);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  background: var(--neu-bg);
+  box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
 }
 
 .player-card.left {

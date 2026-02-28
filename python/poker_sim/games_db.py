@@ -171,12 +171,12 @@ def add_buy_in(game_id: str, user_id: str, amount: float) -> dict:
     """Add to player's total buy-in."""
     init_db()
     amt = max(0, float(amount))
-    with _conn() as c:
-        c.execute(
+    with _conn() as conn:
+        cur = conn.execute(
             "UPDATE game_players SET total_buy_in = total_buy_in + ? WHERE game_id = ? AND user_id = ? AND left_at IS NULL",
             (amt, game_id, user_id),
         )
-        if c.rowcount == 0:
+        if cur.rowcount == 0:
             raise ValueError("Player not in game or already left")
     return get_game(game_id)
 
@@ -184,12 +184,12 @@ def add_buy_in(game_id: str, user_id: str, amount: float) -> dict:
 def leave_game(game_id: str, user_id: str, cash_out: float) -> dict:
     """Leave game with final cash-out."""
     init_db()
-    with _conn() as c:
-        c.execute(
+    with _conn() as conn:
+        cur = conn.execute(
             "UPDATE game_players SET cash_out = ?, left_at = ? WHERE game_id = ? AND user_id = ?",
             (float(cash_out), datetime.utcnow().isoformat(), game_id, user_id),
         )
-        if c.rowcount == 0:
+        if cur.rowcount == 0:
             raise ValueError("Player not in game")
     return get_game(game_id)
 

@@ -15,7 +15,7 @@ from poker_sim.hand_eval import (
     evaluate_7,
     compare_hands,
 )
-from poker_sim.monte_carlo import run_monte_carlo, get_strategy_message
+from poker_sim.monte_carlo import run_monte_carlo, get_strategy_message, get_suggested_action
 
 
 def run_simulation(
@@ -67,6 +67,7 @@ __all__ = [
     "run_monte_carlo",
     "SimResult",
     "get_strategy_message",
+    "get_suggested_action",
     "card_str",
     "RANKS",
     "SUITS",

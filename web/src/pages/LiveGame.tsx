@@ -91,7 +91,7 @@ export default function LiveGame() {
 
       <div className="live-game-players">
         {players.map((p) => (
-          <div key={p.id} className="player-card neu-raised">
+          <div key={p.id} className="player-card">
             <input
               type="text"
               className="player-name neu-input"

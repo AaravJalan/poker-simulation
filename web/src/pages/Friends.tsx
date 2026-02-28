@@ -97,6 +97,7 @@ export default function Friends() {
       if (!res.ok) throw new Error('Failed')
       loadInbox()
       loadFriends()
+      window.dispatchEvent(new CustomEvent('friends-inbox-update'))
     } catch {
       // ignore
     }
@@ -111,6 +112,7 @@ export default function Friends() {
         body: JSON.stringify({ user_id: user.id, from_id: fromId }),
       })
       loadInbox()
+      window.dispatchEvent(new CustomEvent('friends-inbox-update'))
     } catch {
       // ignore
     }

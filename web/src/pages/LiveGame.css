@@ -1,6 +1,7 @@
 .live-game-page {
   padding: 1rem;
-  max-width: 400px;
+  max-width: 100%;
+  width: 100%;
 }
 
 .live-game-header {
@@ -44,15 +45,17 @@
 .totals-row.loss { color: var(--neu-danger); }
 
 .live-game-players {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
 }
 
-.player-card {
-  padding: 1rem;
+.live-game-page .player-card {
+  padding: 1.25rem;
   border-radius: var(--neu-radius-sm);
   position: relative;
+  background: var(--neu-bg);
+  box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
 }
 
 .player-name {

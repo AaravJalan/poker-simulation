@@ -299,6 +299,24 @@
   font-size: 1.25rem;
 }
 
+.action-value.action-raise {
+  color: var(--neu-success);
+  font-weight: 600;
+}
+
+.action-value.action-bet {
+  color: var(--neu-success);
+}
+
+.action-value.action-check {
+  color: var(--neu-text-muted);
+}
+
+.action-value.action-check-fold {
+  color: var(--neu-text-muted);
+}
+
+/* Legacy class names (kept for backwards compat) */
 .action-value.bet {
   color: var(--neu-success);
 }

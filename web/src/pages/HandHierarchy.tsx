@@ -24,7 +24,7 @@ export default function HandHierarchy() {
       <p className="hand-hierarchy-intro">Poker hand rankings from strongest to weakest. Use as a quick reference at the table.</p>
       <div className="hand-hierarchy-list">
         {RANKINGS.map((h) => (
-          <div key={h.rank} className="hand-hierarchy-item neu-raised">
+          <div key={h.rank} className="hand-hierarchy-item">
             <span className="hand-rank">#{h.rank}</span>
             <div className="hand-info">
               <strong>{h.name}</strong>
