@@ -50,6 +50,10 @@ export default function Login() {
   }
 
   const handleGoogle = async () => {
+    if (!supabaseConfigured) {
+      setPokerIdError('Supabase is not configured. Create web/.env with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the web dev server.')
+      return
+    }
     try {
       await loginWithGoogle()
       // Google OAuth redirects away; on return, auth state updates and useEffect navigates
@@ -76,16 +80,20 @@ export default function Login() {
           <h2>{isSignUp ? 'Create account' : 'Sign in'}</h2>
           <p className="tagline">PokerID (email + password{isSignUp ? ', display name required' : ''})</p>
 
-          {supabaseConfigured && (
-            <>
-              <button type="button" className="neu-btn google-btn" onClick={handleGoogle}>
-                <span className="google-icon">G</span> Continue with Google
-              </button>
-              <div className="divider">
-                <span>or</span>
-              </div>
-            </>
-          )}
+          <>
+            <button
+              type="button"
+              className="neu-btn google-btn"
+              onClick={handleGoogle}
+              disabled={!supabaseConfigured}
+              title={!supabaseConfigured ? 'Set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY in web/.env to enable Google sign-in' : undefined}
+            >
+              <span className="google-icon">G</span> Continue with Google
+            </button>
+            <div className="divider">
+              <span>or</span>
+            </div>
+          </>
 
           <form onSubmit={handlePokerID}>
             <div className="form-group">
@@ -158,15 +166,15 @@ export default function Login() {
         <p className="login-tagline">Monte Carlo Texas Hold'em — Win %, EV strategy & live probability</p>
       </header>
       <div className="login-actions">
-        {supabaseConfigured && (
-          <button
-            type="button"
-            className="login-cta google-cta"
-            onClick={handleGoogle}
-          >
-            <span className="google-icon">G</span> Continue with Gmail
-          </button>
-        )}
+        <button
+          type="button"
+          className="login-cta google-cta"
+          onClick={handleGoogle}
+          title={!supabaseConfigured ? 'Set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY in web/.env to enable Google sign-in' : undefined}
+          aria-disabled={!supabaseConfigured}
+        >
+          <span className="google-icon">G</span> Continue with Gmail
+        </button>
         <button
           type="button"
           className="login-cta primary-cta"
@@ -182,6 +190,13 @@ export default function Login() {
           Sign in
         </button>
       </div>
+      {!supabaseConfigured && (
+        <p className="error-msg" style={{ marginTop: 12, maxWidth: 520 }}>
+          Google sign-in is disabled locally until Supabase is configured. Create <code>web/.env</code> with{' '}
+          <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>, then restart <code>npm run dev</code>.
+        </p>
+      )}
+      {pokerIdError && <p className="error-msg" style={{ marginTop: 12 }}>{pokerIdError}</p>}
       <p className="login-features-hint">Live probability • Hand analysis • Monte Carlo equity</p>
       <div className="login-features">
         <div className="login-feature-card">

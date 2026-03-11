@@ -107,7 +107,7 @@ A Texas Hold'em poker decision-support app with Monte Carlo simulations, hand an
 
 ```bash
 cd python
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
@@ -121,7 +121,7 @@ From repo root:
 
 Or manually:
 ```bash
-cd python && uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+cd python && source .venv/bin/activate && uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 API: **http://localhost:8000**
@@ -131,10 +131,27 @@ API: **http://localhost:8000**
 ```bash
 cd web
 npm install
-npm run dev
+npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
 App: **http://localhost:5173** (proxies `/api` to port 8000)
+
+### 4. (Optional) Use Supabase locally
+
+By default, local dev uses **SQLite + PokerID**. To use **Supabase** locally:
+
+- Set frontend env vars in `web/.env` (copy from `web/.env.example`):
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_ANON_KEY`
+- Set backend env vars before starting the API:
+  - `SUPABASE_URL`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+
+Google sign-in in local dev requires Supabase allowlisting redirect URLs in:
+**Supabase → Authentication → URL Configuration**:
+
+- `http://localhost:5173`
+- `http://127.0.0.1:5173`
 
 ---
 

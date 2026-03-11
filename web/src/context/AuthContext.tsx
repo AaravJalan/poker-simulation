@@ -79,7 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // No prompt - user should use PokerID or configure Supabase (see .env.example)
       return
     }
-    await supabase.auth.signInWithOAuth({ provider: 'google' })
+    // Explicit redirect avoids localhost/127.0.0.1 mismatch issues in local dev.
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    })
   }
 
   const loginWithPokerID = async (email: string, password: string, username?: string) => {
