@@ -7,6 +7,7 @@ export interface User {
   email: string
   name: string
   avatar?: string
+  provider?: 'google' | 'email' | 'pokerid' | string
 }
 
 interface AuthContextType {
@@ -27,15 +28,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const avatarFromMeta = (meta: any) =>
+    (meta?.avatar_url as string | undefined) ||
+    (meta?.picture as string | undefined) ||
+    undefined
+
   useEffect(() => {
     if (supabase) {
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
+          const provider = (session.user.app_metadata as any)?.provider || (session.user.app_metadata as any)?.providers?.[0]
           setUser({
             id: session.user.id,
             email: session.user.email || '',
             name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-            avatar: session.user.user_metadata?.avatar_url,
+            avatar: avatarFromMeta(session.user.user_metadata),
+            provider,
           })
         } else {
           const stored = localStorage.getItem(STORAGE_KEY)
@@ -51,11 +59,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
         if (session?.user) {
+          const provider = (session.user.app_metadata as any)?.provider || (session.user.app_metadata as any)?.providers?.[0]
           setUser({
             id: session.user.id,
             email: session.user.email || '',
             name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-            avatar: session.user.user_metadata?.avatar_url,
+            avatar: avatarFromMeta(session.user.user_metadata),
+            provider,
           })
         } else {
           setUser(null)
@@ -87,15 +97,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const loginWithPokerID = async (email: string, password: string, username?: string) => {
-    if (supabase) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-      return
-    }
     const res = await fetch(apiUrl('/api/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ identifier: email, password }),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {
@@ -107,22 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       throw new Error(msg)
     }
-    const u: User = { id: data.id, email: data.email, name: data.name }
+    const u: User = { id: data.id, email: data.email, name: data.name, provider: 'pokerid' }
     setUser(u)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
   }
 
   const signUpWithPokerID = async (email: string, password: string, username: string) => {
     if (!username?.trim()) throw new Error('Display name is required')
-    if (supabase) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name: username.trim() } },
-      })
-      if (error) throw error
-      return
-    }
     const res = await fetch(apiUrl('/api/auth/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -139,13 +135,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(msg)
     }
     const u: User = { id: data.id, email: data.email, name: data.name }
-    setUser(u)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
+    const u2: User = { ...u, provider: 'pokerid' }
+    setUser(u2)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(u2))
   }
 
   const updateProfile = async (currentPassword: string, newUsername?: string, newPassword?: string) => {
     if (!user?.id) throw new Error('Not logged in')
-    if (supabase) {
+    if (supabase && user.provider !== 'pokerid') {
       if (newPassword?.trim()) {
         const { error } = await supabase.auth.updateUser({ password: newPassword })
         if (error) throw error

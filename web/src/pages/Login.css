@@ -225,6 +225,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
 
@@ -235,7 +236,7 @@
 
 .divider {
   text-align: center;
-  margin: 1rem 0;
+  margin: 0.35rem 0 0.65rem;
   color: var(--neu-text-muted);
   font-size: 0.9rem;
 }

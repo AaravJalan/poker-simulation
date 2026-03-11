@@ -17,6 +17,8 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
   const [error, setError] = useState('')
   const menuRef = useRef<HTMLDivElement>(null)
 
+  const needsCurrentPassword = user?.provider === 'pokerid' || !supabaseConfigured
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node) && anchorRef.current && !anchorRef.current.contains(e.target as Node)) {
@@ -30,7 +32,7 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
   const handleUpdateUsername = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!supabaseConfigured && !currentPassword?.trim()) {
+    if (needsCurrentPassword && !currentPassword?.trim()) {
       setError('Current password required for PokerID')
       return
     }
@@ -63,6 +65,7 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
   }
 
   const showProfileEdit = true
+  const allowPasswordChange = !(supabaseConfigured && user?.provider === 'google')
 
   const showPopup = mode === 'username' || mode === 'password'
 
@@ -80,9 +83,11 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
               <button type="button" className="profile-menu-item" onClick={(e) => { e.stopPropagation(); setMode('username'); }}>
                 Rename profile
               </button>
-              <button type="button" className="profile-menu-item" onClick={(e) => { e.stopPropagation(); setMode('password'); setNewUsername(''); setNewPassword(''); setError(''); }}>
-                Change password
-              </button>
+              {allowPasswordChange && (
+                <button type="button" className="profile-menu-item" onClick={(e) => { e.stopPropagation(); setMode('password'); setNewUsername(''); setNewPassword(''); setError(''); }}>
+                  Change password
+                </button>
+              )}
             </>
           )}
         </>
@@ -94,7 +99,7 @@ export default function ProfileMenu({ anchorRef, onClose }: ProfileMenuProps) {
           {mode === 'username' && (
             <form onSubmit={handleUpdateUsername} className="profile-menu-form">
               <h4 id="profile-modal-title">Change username</h4>
-              {!supabaseConfigured && (
+              {needsCurrentPassword && (
                 <input type="password" placeholder="Current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="neu-input" required />
               )}
               <input type="text" placeholder="New username" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} className="neu-input" required />

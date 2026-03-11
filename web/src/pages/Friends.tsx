@@ -60,10 +60,21 @@ export default function Friends() {
     if (!user?.id || !search.trim()) return
     setLoading(true)
     setFeedback('')
-    fetch(apiUrl(`/api/friends/search?user_id=${encodeURIComponent(user.id)}&q=${encodeURIComponent(search)}`))
-      .then((r) => r.json())
-      .then((d) => setResults(d.users || []))
-      .catch(() => setResults([]))
+    fetch(apiUrl(`/api/friends/search?user_id=${encodeURIComponent(user.id)}&q=${encodeURIComponent(search.trim())}`))
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}))
+        if (!r.ok) throw new Error(typeof d?.detail === 'string' ? d.detail : 'Search failed')
+        return d
+      })
+      .then((d) => {
+        const users = d.users || []
+        setResults(users)
+        if (users.length === 0) setFeedback('No users found.')
+      })
+      .catch((e) => {
+        setResults([])
+        setFeedback(e instanceof Error ? e.message : 'Search failed')
+      })
       .finally(() => setLoading(false))
   }
 

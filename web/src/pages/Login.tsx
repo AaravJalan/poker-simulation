@@ -78,7 +78,6 @@ export default function Login() {
         <div className="login-card neu-raised">
           <button type="button" className="login-back" onClick={() => setShowForm(false)}>← Back</button>
           <h2>{isSignUp ? 'Create account' : 'Sign in'}</h2>
-          <p className="tagline">PokerID (email + password{isSignUp ? ', display name required' : ''})</p>
 
           <>
             <button
@@ -97,15 +96,14 @@ export default function Login() {
 
           <form onSubmit={handlePokerID}>
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email or username</label>
               <input
                 id="email"
-                type="email"
-                placeholder="you@example.com"
+                type="text"
+                placeholder={isSignUp ? 'Pick a username (email optional)' : 'Email or username'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="neu-input"
-                required
               />
             </div>
             <div className="form-group">
@@ -166,15 +164,6 @@ export default function Login() {
         <p className="login-tagline">Monte Carlo Texas Hold'em — Win %, EV strategy & live probability</p>
       </header>
       <div className="login-actions">
-        <button
-          type="button"
-          className="login-cta google-cta"
-          onClick={handleGoogle}
-          title={!supabaseConfigured ? 'Set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY in web/.env to enable Google sign-in' : undefined}
-          aria-disabled={!supabaseConfigured}
-        >
-          <span className="google-icon">G</span> Continue with Gmail
-        </button>
         <button
           type="button"
           className="login-cta primary-cta"

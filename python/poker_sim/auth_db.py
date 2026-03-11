@@ -32,43 +32,65 @@ def init_db():
         c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)")
 
 
-def register(email: str, password: str, username: str) -> dict:
+def register(email: str | None, password: str, username: str) -> dict:
     """
-    Register a new user. Username required. Raises ValueError if email already exists.
+    Register a new user. Username required.
+    Email is optional; if omitted we generate an internal placeholder email.
     Returns { id, email, name }.
     """
     init_db()
-    email = email.strip().lower()
+    email = (email or "").strip().lower()
     name = (username or "").strip()
     if not name:
         raise ValueError("Display name is required")
+    if len(name) < 2:
+        raise ValueError("Display name must be at least 2 characters")
     password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     user_id = str(uuid.uuid4())
+    if not email:
+        email = f"{user_id}@pokerid.local"
 
     with _conn() as c:
+        existing = c.execute("SELECT 1 FROM users WHERE username = ? LIMIT 1", (name.strip(),)).fetchone()
+        if existing:
+            raise ValueError("Username already registered")
         try:
             c.execute(
                 "INSERT INTO users (id, email, password_hash, username) VALUES (?, ?, ?, ?)",
                 (user_id, email, password_hash, name.strip()),
             )
         except sqlite3.IntegrityError:
-            raise ValueError("Email already registered")
+            raise ValueError("Email or username already registered")
 
     return {"id": user_id, "email": email, "name": name}
 
 
-def login(email: str, password: str) -> Optional[dict]:
+def login(identifier: str, password: str) -> Optional[dict]:
     """
-    Verify credentials. Returns { id, email, name } or None if invalid.
+    Verify credentials by email or username. Returns { id, email, name } or None if invalid.
     """
     init_db()
-    email = email.strip().lower()
+    ident = (identifier or "").strip()
+    if not ident:
+        return None
+    is_email = "@" in ident
+    ident_norm = ident.lower() if is_email else ident
 
     with _conn() as c:
-        row = c.execute(
-            "SELECT id, email, password_hash, username FROM users WHERE email = ?",
-            (email,),
-        ).fetchone()
+        if is_email:
+            row = c.execute(
+                "SELECT id, email, password_hash, username FROM users WHERE email = ?",
+                (ident_norm,),
+            ).fetchone()
+        else:
+            cnt = c.execute("SELECT COUNT(1) AS n FROM users WHERE username = ?", (ident_norm,)).fetchone()
+            if cnt and int(cnt["n"]) > 1:
+                # Older databases might have duplicate usernames; require email to disambiguate.
+                raise ValueError("Multiple accounts share this username. Please sign in with email.")
+            row = c.execute(
+                "SELECT id, email, password_hash, username FROM users WHERE username = ?",
+                (ident_norm,),
+            ).fetchone()
 
     if not row:
         return None

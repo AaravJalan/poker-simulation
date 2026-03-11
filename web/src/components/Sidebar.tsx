@@ -46,7 +46,11 @@ export default function Sidebar({ onNav }: SidebarProps) {
         onKeyDown={(e) => e.key === 'Enter' && setProfileOpen((v) => !v)}
       >
         <div className="user-avatar">
-          {user?.name?.charAt(0)?.toUpperCase() || '?'}
+          {user?.avatar ? (
+            <img src={user.avatar} alt={user.name || 'User'} className="user-avatar-img" referrerPolicy="no-referrer" />
+          ) : (
+            user?.name?.charAt(0)?.toUpperCase() || '?'
+          )}
         </div>
         <span className="user-name">{user?.name || user?.email || 'Guest'}</span>
         {profileOpen && <ProfileMenu anchorRef={profileAnchorRef} onClose={() => setProfileOpen(false)} />}

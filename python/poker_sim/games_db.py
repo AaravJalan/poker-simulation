@@ -20,6 +20,12 @@ def _gen_code() -> str:
 
 
 def init_db():
+    # Ensure users table exists on fresh DBs (invite-by-email uses it)
+    try:
+        from poker_sim.auth_db import init_db as _init_users_db
+        _init_users_db()
+    except Exception:
+        pass
     with _conn() as c:
         c.execute("""
             CREATE TABLE IF NOT EXISTS games (

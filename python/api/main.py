@@ -98,13 +98,13 @@ class AnalyzeResponse(BaseModel):
 
 
 class AuthRegisterRequest(BaseModel):
-    email: str = Field(..., min_length=1)
+    email: str | None = None
     password: str = Field(..., min_length=6)
     username: str = Field(..., min_length=1)
 
 
 class AuthLoginRequest(BaseModel):
-    email: str = Field(..., min_length=1)
+    identifier: str = Field(..., min_length=1, description="Email or username")
     password: str = Field(..., min_length=1)
 
 
@@ -116,7 +116,7 @@ class AuthResponse(BaseModel):
 
 @app.post("/api/auth/register", response_model=AuthResponse)
 def auth_register(req: AuthRegisterRequest):
-    """Register a new PokerID account. Email must be unique."""
+    """Register a new PokerID account. Email is optional; username must be unique."""
     try:
         from poker_sim.auth_db import register
         user = register(req.email, req.password, req.username)
@@ -130,12 +130,15 @@ def auth_register(req: AuthRegisterRequest):
 
 @app.post("/api/auth/login", response_model=AuthResponse)
 def auth_login(req: AuthLoginRequest):
-    """Login with PokerID (email + password)."""
+    """Login with PokerID (email/username + password)."""
     try:
         from poker_sim.auth_db import login
-        user = login(req.email, req.password)
+        try:
+            user = login(req.identifier, req.password)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Invalid username/email or password")
         return AuthResponse(**user)
     except HTTPException:
         raise
