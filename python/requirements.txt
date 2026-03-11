@@ -16,3 +16,6 @@ opencv-python-headless>=4.8.0
 
 # AI chatbot (optional; set OPENAI_API_KEY for GPT responses)
 openai>=1.0.0
+
+# Supabase (optional; set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY for Vercel)
+supabase>=2.0.0

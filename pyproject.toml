@@ -1,0 +1,7 @@
+[project]
+name = "poker-simulation"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+app = "index:app"

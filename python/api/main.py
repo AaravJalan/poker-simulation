@@ -3,6 +3,7 @@ FastAPI backend for poker simulation.
 Run: cd python && uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 """
 
+import os
 import sys
 import time
 import logging
@@ -10,8 +11,11 @@ from pathlib import Path
 
 # Ensure poker_sim package is importable when running from repo root or python/
 _root = Path(__file__).resolve().parent.parent
+_project_root = _root.parent
 if str(_root) not in sys.path:
     sys.path.insert(0, str(_root))
+
+ON_VERCEL = os.getenv("VERCEL") == "1"
 
 from fastapi import FastAPI, HTTPException, File, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,10 +40,11 @@ app = FastAPI(
     description="Monte Carlo Texas Hold'em win/tie/loss and EV feedback",
 )
 
+_cors_origins = ["http://localhost:8000", "http://127.0.0.1:8000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+)(:\d+)?|https://[a-zA-Z0-9-]+\.github\.io",
+    allow_origins=_cors_origins,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+)(:\d+)?|https://[a-zA-Z0-9-]+\.github\.io|https://[a-zA-Z0-9-]+\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -181,8 +186,8 @@ class WinningsEntryRequest(BaseModel):
 @app.post("/api/winnings")
 def winnings_add(req: WinningsEntryRequest):
     try:
-        from poker_sim.winnings_db import add_entry
-        return add_entry(req.user_id, req.session_date, req.buy_in, req.cash_out, req.notes, req.hours)
+        from poker_sim.db_router import winnings_add_entry
+        return winnings_add_entry(req.user_id, req.session_date, req.buy_in, req.cash_out, req.notes, req.hours)
     except Exception as e:
         logger.exception("Winnings add failed")
         raise HTTPException(status_code=500, detail=str(e))
@@ -191,8 +196,8 @@ def winnings_add(req: WinningsEntryRequest):
 @app.get("/api/winnings")
 def winnings_list(user_id: str, period: str = "all"):
     try:
-        from poker_sim.winnings_db import get_entries
-        return {"entries": get_entries(user_id, period)}
+        from poker_sim.db_router import winnings_get_entries
+        return {"entries": winnings_get_entries(user_id, period)}
     except Exception as e:
         logger.exception("Winnings list failed")
         raise HTTPException(status_code=500, detail=str(e))
@@ -201,8 +206,8 @@ def winnings_list(user_id: str, period: str = "all"):
 @app.delete("/api/winnings/{entry_id}")
 def winnings_delete(entry_id: str, user_id: str):
     try:
-        from poker_sim.winnings_db import delete_entry
-        if not delete_entry(user_id, entry_id):
+        from poker_sim.db_router import winnings_delete_entry
+        if not winnings_delete_entry(user_id, entry_id):
             raise HTTPException(status_code=404, detail="Entry not found")
         return {"ok": True}
     except HTTPException:
@@ -212,7 +217,7 @@ def winnings_delete(entry_id: str, user_id: str):
 @app.get("/api/friends")
 def friends_list(user_id: str):
     try:
-        from poker_sim.friends_db import get_friends
+        from poker_sim.db_router import get_friends
         return {"friends": get_friends(user_id)}
     except Exception as e:
         logger.exception("Friends list failed")
@@ -222,7 +227,7 @@ def friends_list(user_id: str):
 @app.get("/api/friends/search")
 def friends_search(user_id: str, q: str = ""):
     try:
-        from poker_sim.friends_db import search_users
+        from poker_sim.db_router import search_users
         return {"users": search_users(user_id, q)}
     except Exception as e:
         logger.exception("Friends search failed")
@@ -238,7 +243,7 @@ class FriendAddRequest(BaseModel):
 def friends_add(req: FriendAddRequest):
     """Send a friend request. Recipient must accept in inbox."""
     try:
-        from poker_sim.friends_db import send_friend_request
+        from poker_sim.db_router import send_friend_request
         send_friend_request(req.user_id, req.friend_id)
         return {"ok": True, "status": "request_sent"}
     except ValueError as e:
@@ -249,7 +254,7 @@ def friends_add(req: FriendAddRequest):
 def friends_inbox(user_id: str):
     """Pending friend requests (incoming)."""
     try:
-        from poker_sim.friends_db import get_pending_requests
+        from poker_sim.db_router import get_pending_requests
         return {"requests": get_pending_requests(user_id)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -259,7 +264,7 @@ def friends_inbox(user_id: str):
 def friends_sent(user_id: str):
     """User IDs we've sent requests to."""
     try:
-        from poker_sim.friends_db import get_sent_requests
+        from poker_sim.db_router import get_sent_requests
         return {"sent_to": list(get_sent_requests(user_id))}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -273,7 +278,7 @@ class FriendRequestAction(BaseModel):
 @app.post("/api/friends/accept")
 def friends_accept(req: FriendRequestAction):
     try:
-        from poker_sim.friends_db import accept_friend_request
+        from poker_sim.db_router import accept_friend_request
         accept_friend_request(req.user_id, req.from_id)
         return {"ok": True}
     except ValueError as e:
@@ -283,7 +288,7 @@ def friends_accept(req: FriendRequestAction):
 @app.post("/api/friends/decline")
 def friends_decline(req: FriendRequestAction):
     try:
-        from poker_sim.friends_db import decline_friend_request
+        from poker_sim.db_router import decline_friend_request
         decline_friend_request(req.user_id, req.from_id)
         return {"ok": True}
     except Exception as e:
@@ -293,7 +298,7 @@ def friends_decline(req: FriendRequestAction):
 @app.delete("/api/friends/{friend_id}")
 def friends_remove(friend_id: str, user_id: str):
     try:
-        from poker_sim.friends_db import remove_friend
+        from poker_sim.db_router import remove_friend
         remove_friend(user_id, friend_id)
         return {"ok": True}
     except Exception as e:
@@ -303,7 +308,7 @@ def friends_remove(friend_id: str, user_id: str):
 @app.get("/api/friends/all-users")
 def friends_all_users(user_id: str, limit: int = 50):
     try:
-        from poker_sim.friends_db import list_all_users
+        from poker_sim.db_router import list_all_users
         return {"users": list_all_users(user_id, limit)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -349,7 +354,7 @@ class GameEndRequest(BaseModel):
 @app.post("/api/games")
 def games_create(req: GameCreateRequest):
     try:
-        from poker_sim.games_db import create_game
+        from poker_sim.db_router import create_game
         return create_game(req.user_id, req.user_name)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -358,7 +363,7 @@ def games_create(req: GameCreateRequest):
 @app.get("/api/games/by-code/{code}")
 def games_get_by_code(code: str):
     try:
-        from poker_sim.games_db import get_game_by_code
+        from poker_sim.db_router import get_game_by_code
         g = get_game_by_code(code)
         if not g:
             raise HTTPException(status_code=404, detail="Game not found")
@@ -370,7 +375,7 @@ def games_get_by_code(code: str):
 @app.get("/api/games/{game_id}")
 def games_get(game_id: str):
     try:
-        from poker_sim.games_db import get_game
+        from poker_sim.db_router import get_game
         g = get_game(game_id)
         if not g:
             raise HTTPException(status_code=404, detail="Game not found")
@@ -382,7 +387,7 @@ def games_get(game_id: str):
 @app.get("/api/games/user/{user_id}")
 def games_list_user(user_id: str):
     try:
-        from poker_sim.games_db import list_user_games
+        from poker_sim.db_router import list_user_games
         return {"games": list_user_games(user_id)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -391,7 +396,7 @@ def games_list_user(user_id: str):
 @app.post("/api/games/{game_id}/join")
 def games_join(game_id: str, req: GameJoinRequest):
     try:
-        from poker_sim.games_db import join_game
+        from poker_sim.db_router import join_game
         return join_game(game_id, req.user_id, req.user_name, req.initial_buy_in)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -400,7 +405,7 @@ def games_join(game_id: str, req: GameJoinRequest):
 @app.post("/api/games/{game_id}/add-buy-in")
 def games_add_buy_in(game_id: str, req: GameAddBuyInRequest):
     try:
-        from poker_sim.games_db import add_buy_in
+        from poker_sim.db_router import add_buy_in
         return add_buy_in(game_id, req.user_id, float(req.amount))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -412,7 +417,7 @@ def games_add_buy_in(game_id: str, req: GameAddBuyInRequest):
 @app.post("/api/games/{game_id}/leave")
 def games_leave(game_id: str, req: GameLeaveRequest):
     try:
-        from poker_sim.games_db import leave_game
+        from poker_sim.db_router import leave_game
         return leave_game(game_id, req.user_id, req.cash_out)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -422,7 +427,7 @@ def games_leave(game_id: str, req: GameLeaveRequest):
 def games_invite(game_id: str, req: GameInviteRequest):
     """Invite friends to game. They must accept to join."""
     try:
-        from poker_sim.games_db import invite_friends_to_game
+        from poker_sim.db_router import invite_friends_to_game
         return invite_friends_to_game(game_id, req.host_id, req.friend_ids)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -432,7 +437,7 @@ def games_invite(game_id: str, req: GameInviteRequest):
 def games_pending_invites(user_id: str):
     """Get games this user is invited to."""
     try:
-        from poker_sim.games_db import get_pending_game_invites
+        from poker_sim.db_router import get_pending_game_invites
         return {"invites": get_pending_game_invites(user_id)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -447,7 +452,7 @@ class GameAcceptInviteRequest(BaseModel):
 @app.post("/api/games/{game_id}/accept-invite")
 def games_accept_invite(game_id: str, req: GameAcceptInviteRequest):
     try:
-        from poker_sim.games_db import accept_game_invite
+        from poker_sim.db_router import accept_game_invite
         return accept_game_invite(game_id, req.user_id, req.user_name, req.initial_buy_in)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -467,7 +472,7 @@ class GameAddManualRequest(BaseModel):
 def games_invite_by_email(game_id: str, req: GameAddByEmailRequest):
     """Invite user by email. They must accept to join."""
     try:
-        from poker_sim.games_db import invite_by_email
+        from poker_sim.db_router import invite_by_email
         return invite_by_email(game_id, req.host_id, req.email)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -476,7 +481,7 @@ def games_invite_by_email(game_id: str, req: GameAddByEmailRequest):
 @app.post("/api/games/{game_id}/add-manual")
 def games_add_manual(game_id: str, req: GameAddManualRequest):
     try:
-        from poker_sim.games_db import add_player_manually
+        from poker_sim.db_router import add_player_manually
         return add_player_manually(game_id, req.host_id, req.name)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -485,7 +490,7 @@ def games_add_manual(game_id: str, req: GameAddManualRequest):
 @app.post("/api/games/{game_id}/end")
 def games_end(game_id: str, req: GameEndRequest):
     try:
-        from poker_sim.games_db import end_game
+        from poker_sim.db_router import end_game
         return end_game(game_id, req.user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -499,7 +504,7 @@ class GameRenameRequest(BaseModel):
 @app.patch("/api/games/{game_id}")
 def games_rename(game_id: str, req: GameRenameRequest):
     try:
-        from poker_sim.games_db import rename_game
+        from poker_sim.db_router import rename_game
         return rename_game(game_id, req.user_id, req.name)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -508,7 +513,7 @@ def games_rename(game_id: str, req: GameRenameRequest):
 @app.delete("/api/games/{game_id}")
 def games_delete(game_id: str, user_id: str = Query(..., description="Host user ID")):
     try:
-        from poker_sim.games_db import delete_game
+        from poker_sim.db_router import delete_game
         delete_game(game_id, user_id)
         return {"ok": True}
     except ValueError as e:
@@ -672,7 +677,8 @@ def _detect_cards_with_boxes(image_bytes: bytes) -> tuple[list[int], list[tuple[
 
 
 # Serve built React app from same origin (no CORS). Must be last.
-_static_dir = _root.parent / "web" / "dist"
+# On Vercel, build outputs to public/; locally we use web/dist
+_static_dir = (_project_root / "public" if ON_VERCEL else _project_root / "web" / "dist")
 if _static_dir.exists():
     assets_dir = _static_dir / "assets"
     if assets_dir.exists():

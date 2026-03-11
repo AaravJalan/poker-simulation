@@ -181,6 +181,51 @@ python3 scripts/download_card_imgs.py
 
 ---
 
+---
+
+## Deploy to Vercel (with Supabase backend)
+
+Host the full app on Vercel; use Supabase for auth and data.
+
+### 1. Supabase setup
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. Run the schema: **Dashboard → SQL Editor** → paste and run `supabase/schema.sql`.
+3. Enable **Email** (and optionally **Google**) in **Authentication → Providers**.
+4. Get **Project URL** and **service_role key** (Settings → API). The service role bypasses RLS—keep it secret.
+
+### 2. Vercel deployment
+
+1. Connect the repo at [vercel.com](https://vercel.com/new).
+2. Add environment variables:
+   - `SUPABASE_URL` = your Supabase project URL
+   - `SUPABASE_SERVICE_ROLE_KEY` = service role key (not anon key)
+   - `VITE_SUPABASE_URL` = same as SUPABASE_URL
+   - `VITE_SUPABASE_ANON_KEY` = anon key (for frontend auth)
+3. Deploy. The build will:
+   - Install Python deps and web deps
+   - Build the React app into `public/`
+   - Deploy FastAPI as a serverless function
+
+### 3. Backfill profiles (optional)
+
+If you have existing users before the trigger was added, run in SQL Editor:
+
+```sql
+INSERT INTO public.profiles (id, email, username)
+SELECT id, email, COALESCE(raw_user_meta_data->>'name', split_part(email, '@', 1))
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+```
+
+### Notes
+
+- **Auth**: When Supabase env vars are set, the frontend uses Supabase Auth (Email/Google). No PokerID in production.
+- **Card scanning**: OpenCV may exceed Vercel’s bundle limit; camera scan may be disabled or need a separate service.
+- **Local dev**: Omit Supabase env vars to use SQLite + PokerID.
+
+---
+
 ## Prerequisites
 
 - **Python** 3.9+
