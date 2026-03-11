@@ -97,6 +97,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const loginWithPokerID = async (email: string, password: string, username?: string) => {
+    const ident = (email || '').trim()
+    // On Vercel/production when Supabase is configured, email+password should use Supabase Auth.
+    // Username-based PokerID remains a local-only convenience.
+    if (supabase && import.meta.env.PROD && ident.includes('@')) {
+      const { error } = await supabase.auth.signInWithPassword({ email: ident, password })
+      if (error) throw error
+      return
+    }
     const res = await fetch(apiUrl('/api/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -119,6 +127,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUpWithPokerID = async (email: string, password: string, username: string) => {
     if (!username?.trim()) throw new Error('Display name is required')
+    const em = (email || '').trim()
+    if (supabase && import.meta.env.PROD) {
+      if (!em || !em.includes('@')) throw new Error('Email is required to create an account on production')
+      const { error } = await supabase.auth.signUp({
+        email: em,
+        password,
+        options: { data: { name: username.trim() } },
+      })
+      if (error) throw error
+      return
+    }
     const res = await fetch(apiUrl('/api/auth/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

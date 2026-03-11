@@ -6,6 +6,13 @@ Otherwise use SQLite (friends_db, games_db, winnings_db).
 import os
 
 _use_supabase = bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_SERVICE_ROLE_KEY"))
+_on_vercel = os.getenv("VERCEL") == "1"
+
+if _on_vercel and not _use_supabase:
+    raise RuntimeError(
+        "Server is running on Vercel without Supabase configured. "
+        "Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel Environment Variables."
+    )
 
 if _use_supabase:
     from poker_sim.supabase_backend import (
