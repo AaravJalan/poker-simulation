@@ -2,131 +2,101 @@
 
 A Texas Hold'em poker decision-support app with Monte Carlo simulations, hand analysis, session tracking, friends, and live games.
 
+### Website
+
+Live app: `https://poker-simulation.vercel.app/`
+
+---
+
+## Purpose
+
+- Quickly estimate **win/tie/loss** and **equity** from any street (preflop → river)
+- Explain *why* (hand analysis + draws) instead of just showing a percentage
+- Track results over time (sessions + winnings)
+
+---
+
 ## Features
 
 ### Simulator
-- **Card selection**: Pick 2 hole cards and 0–5 board cards from a visual grid, or scan via camera
-- **Live probability**: Win/tie/loss % updates as you select cards (2–7 cards)
-- **Equity by street**: Line graph of win probability at preflop, flop, turn, river (2 → 5 → 6 → 7 cards)
-- **Best possible hand**: Shown live when 5+ cards are selected
-- **Action tile**: Suggests "Bet" or "Check / Fold" based on equity
-- **Hand analysis**: Current hand, hands that beat you, potential draws
-- **AI assistant**: Chat panel (top-right) for poker questions; uses OpenAI if `OPENAI_API_KEY` is set, else canned tips
 
-### My simulations
-- Save runs to localStorage and revisit past simulations
+- **Tap-to-pick cards** (hole + board) with a visual deck grid (mobile-friendly layout)
+- **Live probability** while selecting cards (fast approximation)
+- **Run simulation** for a more accurate Monte Carlo result
+- **Equity by street** chart (how equity changes as community cards arrive)
+- **Hand analysis** (current best hand, hands that beat you, potential draws)
+- **AI assistant** (optional): poker Q&A if `OPENAI_API_KEY` is configured
+
+### Past Simulations
+
+- Save runs to `localStorage` and revisit previous simulations
 
 ### Winnings
-- Track sessions: date, buy-in, cash-out, hours, notes
-- Stats: total profit, sessions, hours, profitable ratio, profit/hour
-- Line graph of cumulative profit over time (on the right)
+
+- Track sessions: **date, buy-in, cash-out, hours, notes**
+- Stats and a cumulative **profit over time** graph
 
 ### Friends
-- Add friends via search (email/username)
-- Friend requests: send request → they accept in inbox
-- Remove friends
+
+- Search and add friends
+- Inbox for friend requests
 
 ### Games
-- Create games with a join code
-- Invite by PokerID (email) or select friends — they get a request and must accept
-- Add players manually (no account)
-- Track buy-ins, cash-outs, settlements
-- Rename and delete games (host only)
-- Add session to winnings when leaving a game
 
-### Hand hierarchy
+- Create games with a **join code**
+- Invite friends / add manual players (no account)
+- Track **buy-ins**, **cash-outs**, and **settlements**
+
+### Hand Hierarchy
+
 - Reference page for poker hand rankings
-
-### Card scanning
-- Live camera scan with tracking boxes around detected cards
-- Run `python3 scripts/download_card_imgs.py` to fetch card templates (OpenCV-based detection)
 
 ---
 
 ## Tech Stack
 
-| Layer        | Technology |
-|-------------|------------|
-| Simulation  | **Python** (Monte Carlo, hand evaluator) / **C++** (optional, pybind11) |
-| API         | **Python** – FastAPI |
-| Frontend    | **React** (TypeScript, Vite) – neumorphic UI |
-| Database    | SQLite (users, friends, games, winnings) |
-| Auth        | bcrypt (PokerID) / Supabase (optional) |
-| Card detection | OpenCV, template matching |
-| AI          | OpenAI API (optional) or canned responses |
+| Layer | Tech |
+|---|---|
+| Frontend | **React + TypeScript** (Vite) |
+| UI | CSS styling |
+| Backend API | **FastAPI** (Python) |
+| Simulation | Monte Carlo evaluator (Python) |
+| Auth + DB (prod) | **Supabase Auth + Postgres** |
+| Local dev DB/auth (default) | SQLite + PokerID (bcrypt) |
+| Hosting | **Vercel** (static frontend + Python serverless functions) |
+| AI (optional) | OpenAI API (falls back to canned tips if unset) |
+| Card scanning (optional/local) | OpenCV-based template matching |
 
 ---
 
-## REST API
+## Programming Languages
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| POST | `/api/auth/register` | Register (email, password) |
-| POST | `/api/auth/login` | Login |
-| POST | `/api/auth/update-profile` | Rename, change password |
-| GET | `/api/winnings` | List winnings entries |
-| POST | `/api/winnings` | Add entry |
-| DELETE | `/api/winnings/{id}` | Delete entry |
-| GET | `/api/friends` | List friends |
-| GET | `/api/friends/search` | Search users |
-| POST | `/api/friends` | Send friend request |
-| GET | `/api/friends/inbox` | Pending requests |
-| GET | `/api/friends/sent` | Sent requests |
-| POST | `/api/friends/accept` | Accept request |
-| POST | `/api/friends/decline` | Decline request |
-| DELETE | `/api/friends/{id}` | Remove friend |
-| GET | `/api/friends/all-users` | List all users |
-| POST | `/api/games` | Create game |
-| GET | `/api/games/user/{id}` | User's games |
-| GET | `/api/games/{id}` | Game details |
-| GET | `/api/games/by-code/{code}` | Find by join code |
-| POST | `/api/games/{id}/join` | Join with code |
-| POST | `/api/games/{id}/invite` | Invite friends |
-| GET | `/api/games/invites` | Pending game invites |
-| POST | `/api/games/{id}/accept-invite` | Accept invite |
-| POST | `/api/games/{id}/add-by-email` | Invite by email |
-| POST | `/api/games/{id}/add-manual` | Add manual player |
-| POST | `/api/games/{id}/add-buy-in` | Add buy-in |
-| POST | `/api/games/{id}/leave` | Leave with cash-out |
-| POST | `/api/games/{id}/end` | End game (host) |
-| PATCH | `/api/games/{id}` | Rename game |
-| DELETE | `/api/games/{id}` | Delete game |
-| POST | `/api/simulate` | Run Monte Carlo |
-| POST | `/api/live-analysis` | Live win % (1–7 cards) |
-| POST | `/api/equity-by-street` | Equity at each street |
-| POST | `/api/analyze` | Hand analysis |
-| POST | `/api/scan-cards` | Detect cards from image |
-| POST | `/api/chat` | AI chatbot |
+- **TypeScript**: frontend web app (React)
+- **Python**: backend API (FastAPI) + simulation logic
+- **C++**: native hand evaluation + simulation core (`cpp/`)
+- **SQL**: Supabase Postgres schema/migrations (`supabase/schema.sql`)
+- **Shell**: helper scripts (e.g. `run_api.sh`)
 
 ---
 
-## How to Run
+## How to Run Locally
 
-### 1. Python (API)
+### Requirements (software)
 
-```bash
-cd python
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
+- **Node.js** 18+
+- **Python** 3.9+
 
-### 2. Start the API
+### 1) Start the backend (FastAPI)
 
-From repo root:
+From the repo root:
+
 ```bash
 ./run_api.sh
 ```
 
-Or manually:
-```bash
-cd python && source .venv/bin/activate && uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
-```
+API runs at **`http://127.0.0.1:8000`**.
 
-API: **http://localhost:8000**
-
-### 3. Start the web app
+### 2) Start the frontend (Vite)
 
 ```bash
 cd web
@@ -134,117 +104,27 @@ npm install
 npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
-App: **http://localhost:5173** (proxies `/api` to port 8000)
+App runs at **`http://127.0.0.1:5173`** and calls the backend via `/api`.
 
-### 4. (Optional) Use Supabase locally
+---
 
-By default, local dev uses **SQLite + PokerID**. To use **Supabase** locally:
+## Optional: Supabase locally
 
-- Set frontend env vars in `web/.env` (copy from `web/.env.example`):
-  - `VITE_SUPABASE_URL`
-  - `VITE_SUPABASE_ANON_KEY`
-- Set backend env vars before starting the API:
-  - `SUPABASE_URL`
-  - `SUPABASE_SERVICE_ROLE_KEY`
+Local dev defaults to **SQLite + PokerID**. To use **Supabase** locally:
 
-Google sign-in in local dev requires Supabase allowlisting redirect URLs in:
-**Supabase → Authentication → URL Configuration**:
+### Frontend env (`web/.env`)
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+### Backend env (before starting API)
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+For Google sign-in in local dev, allowlist redirect URLs in **Supabase → Authentication → URL Configuration**:
 
 - `http://localhost:5173`
 - `http://127.0.0.1:5173`
 
 ---
-
-## How to Use
-
-1. **Sign in** with email (and optional display name)
-2. **Simulator**: Select 2 hole cards + 0–5 board cards. Click **Run simulation** or watch live odds
-3. **Camera**: Click 📷 to scan cards (green boxes show detected regions)
-4. **AI**: Click 🤖 (top-right) to ask poker questions
-5. **Winnings**: Add sessions manually or from games when leaving
-6. **Friends**: Search, send request; they accept in inbox
-7. **Games**: Create game, share join code, invite by email or friends; they accept to join
-
----
-
-## Card encoding
-
-Cards use indices **0–51**:
-- Rank = `card % 13` (0=2 … 12=A)
-- Suit = `card // 13` (0=♣ 1=♦ 2=♥ 3=♠)
-
----
-
-## Optional: C++ extension
-
-For faster simulations:
-```bash
-mkdir build && cd build
-cmake ..
-cmake --build .
-cmake --install . --prefix ..
-```
-
-Requires CMake ≥ 3.15 and a C++17 compiler.
-
----
-
-## Optional: Card templates
-
-For camera detection:
-```bash
-python3 scripts/download_card_imgs.py
-```
-
----
-
----
-
-## Deploy to Vercel (with Supabase backend)
-
-Host the full app on Vercel; use Supabase for auth and data.
-
-### 1. Supabase setup
-
-1. Create a project at [supabase.com](https://supabase.com).
-2. Run the schema: **Dashboard → SQL Editor** → paste and run `supabase/schema.sql`.
-3. Enable **Email** (and optionally **Google**) in **Authentication → Providers**.
-4. Get **Project URL** and **service_role key** (Settings → API). The service role bypasses RLS—keep it secret.
-
-### 2. Vercel deployment
-
-1. Connect the repo at [vercel.com](https://vercel.com/new).
-2. Add environment variables:
-   - `SUPABASE_URL` = your Supabase project URL
-   - `SUPABASE_SERVICE_ROLE_KEY` = service role key (not anon key)
-   - `VITE_SUPABASE_URL` = same as SUPABASE_URL
-   - `VITE_SUPABASE_ANON_KEY` = anon key (for frontend auth)
-3. Deploy. The build will:
-   - Install Python deps and web deps
-   - Build the React app into `public/`
-   - Deploy FastAPI as a serverless function
-
-### 3. Backfill profiles (optional)
-
-If you have existing users before the trigger was added, run in SQL Editor:
-
-```sql
-INSERT INTO public.profiles (id, email, username)
-SELECT id, email, COALESCE(raw_user_meta_data->>'name', split_part(email, '@', 1))
-FROM auth.users
-ON CONFLICT (id) DO NOTHING;
-```
-
-### Notes
-
-- **Auth**: When Supabase env vars are set, the frontend uses Supabase Auth (Email/Google). No PokerID in production.
-- **Card scanning**: OpenCV may exceed Vercel’s bundle limit; camera scan may be disabled or need a separate service.
-- **Local dev**: Omit Supabase env vars to use SQLite + PokerID.
-
----
-
-## Prerequisites
-
-- **Python** 3.9+
-- **Node.js** 18+
-- **C++** (optional): C++17, CMake ≥ 3.15

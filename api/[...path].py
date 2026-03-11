@@ -1,8 +1,3 @@
-"""
-Vercel Function catch-all for /api/*.
-
-This ensures routes like /api/health, /api/friends, etc. always hit FastAPI.
-"""
 import sys
 from pathlib import Path
 

@@ -56,7 +56,6 @@ export default function Login() {
     }
     try {
       await loginWithGoogle()
-      // Google OAuth redirects away; on return, auth state updates and useEffect navigates
     } catch {
       setPokerIdError('Google sign-in failed')
     }
