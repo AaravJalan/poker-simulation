@@ -61,7 +61,7 @@ body {
 /* Neumorphic raised (outset) - reduced glow */
 .neu-raised {
   background: var(--neu-bg);
-  box-shadow: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
+  box-shadow: 3px 3px 8px rgba(163, 177, 198, 0.9), -3px -3px 8px rgba(255, 255, 255, 0.85);
   border-radius: var(--neu-radius);
   border: none;
 }
@@ -77,7 +77,7 @@ body {
 /* Neumorphic button */
 .neu-btn {
   background: var(--neu-bg);
-  box-shadow: 5px 5px 10px var(--neu-shadow-dark), -5px -5px 10px var(--neu-shadow-light);
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.9), -5px -5px 10px rgba(255, 255, 255, 0.82);
   border-radius: var(--neu-radius-sm);
   border: none;
   padding: 0.75rem 1.5rem;
@@ -85,6 +85,7 @@ body {
   font-weight: 600;
   color: var(--neu-text);
   cursor: pointer;
+  text-decoration: none;
   transition: box-shadow 0.2s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -101,23 +102,23 @@ body {
 }
 
 .neu-btn:hover {
-  box-shadow: 7px 7px 14px var(--neu-shadow-dark), -7px -7px 14px var(--neu-shadow-light);
+  box-shadow: 7px 7px 14px rgba(163, 177, 198, 0.92), -7px -7px 14px rgba(255, 255, 255, 0.86);
 }
 
 .neu-btn:active {
-  box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+  box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.92), inset -3px -3px 6px rgba(255, 255, 255, 0.84);
   transform: scale(0.98);
 }
 
 .neu-btn-primary {
   background: linear-gradient(145deg, #5b7c99, #4a6a85);
   color: white;
-  box-shadow: 5px 5px 10px var(--neu-shadow-dark), -2px -2px 6px var(--neu-shadow-light);
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.9), -2px -2px 6px rgba(255, 255, 255, 0.78);
 }
 
 .neu-btn-primary:hover {
   background: linear-gradient(145deg, #6a8baa, #5b7c99);
-  box-shadow: 6px 6px 12px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
+  box-shadow: 6px 6px 12px rgba(163, 177, 198, 0.92), -3px -3px 8px rgba(255, 255, 255, 0.82);
 }
 
 .neu-btn-primary:active {

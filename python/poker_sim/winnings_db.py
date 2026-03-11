@@ -78,3 +78,17 @@ def delete_entry(user_id: str, entry_id: str) -> bool:
     with _conn() as conn:
         cur = conn.execute("DELETE FROM winnings WHERE id = ? AND user_id = ?", (entry_id, user_id))
         return cur.rowcount > 0
+
+
+def update_entry(user_id: str, entry_id: str, session_date: str, buy_in: float, cash_out: float, notes: str = "", hours: float = 0) -> dict:
+    init_db()
+    co = cash_out if cash_out is not None else 0
+    profit = co - buy_in
+    with _conn() as conn:
+        cur = conn.execute(
+            "UPDATE winnings SET session_date=?, buy_in=?, cash_out=?, profit=?, hours=?, notes=? WHERE id=? AND user_id=?",
+            (session_date, buy_in, co, profit, hours or 0, notes or "", entry_id, user_id),
+        )
+        if cur.rowcount == 0:
+            raise ValueError("Entry not found")
+    return {"id": entry_id, "session_date": session_date, "buy_in": buy_in, "cash_out": cash_out, "profit": profit, "hours": hours or 0, "notes": notes or ""}

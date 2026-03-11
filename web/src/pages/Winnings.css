@@ -1,9 +1,10 @@
-.winnings-page { padding: 1.5rem; max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-@media (max-width: 768px) { .winnings-page { grid-template-columns: 1fr; padding: 1rem; } }
+.winnings-page { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
+@media (max-width: 768px) { .winnings-page { padding: 1rem; } }
 @media (max-width: 480px) { .winnings-page { padding: 0.75rem; } }
-.winnings-main { grid-column: 1; }
-.winnings-graph-wrap { grid-column: 2; position: sticky; top: 1rem; }
-@media (max-width: 768px) { .winnings-graph-wrap { grid-column: 1; position: static; } }
+.winnings-top { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 900px) { .winnings-top { grid-template-columns: 1fr; } }
+.winnings-top-right { position: sticky; top: 1rem; margin-top: 3.05rem; }
+@media (max-width: 900px) { .winnings-top-right { position: static; } }
 .winnings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .winnings-header h1 { margin: 0; font-size: 1.5rem; }
 .winnings-filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
@@ -34,6 +35,8 @@
 .form-row .neu-input { width: 100%; }
 .winnings-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .winnings-item { padding: 1rem; border-radius: var(--neu-radius-sm); position: relative; }
+.winnings-item-btn { width: 100%; text-align: left; background: var(--neu-bg); border: none; cursor: pointer; color: rgba(44, 62, 80, 0.82); font-family: inherit; }
+.winnings-item-btn:hover { transform: translateY(-1px); }
 .item-date { font-weight: 600; margin-bottom: 0.25rem; }
 .item-details .profit { margin-left: 0.5rem; font-weight: 700; }
 .item-details .profit.win { color: var(--neu-success); }
@@ -41,3 +44,90 @@
 .item-notes { font-size: 0.9rem; color: var(--neu-text-muted); margin-top: 0.25rem; }
 .winnings-item .delete-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; color: var(--neu-text-muted); cursor: pointer; font-size: 0.8rem; }
 .winnings-item .delete-btn:hover { color: var(--neu-danger); }
+
+.winnings-records-title {
+  margin: 1.25rem 0 0.75rem;
+  color: var(--neu-text-muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.winnings-records-wrap { grid-column: 1 / -1; margin-top: 1rem; }
+.winnings-records { margin-top: 0.25rem; }
+
+/* Records grid */
+.winnings-list.winnings-records {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .winnings-list.winnings-records {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .winnings-list.winnings-records {
+    grid-template-columns: 1fr;
+  }
+}
+
+.winnings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 60;
+}
+
+.winnings-modal {
+  width: 100%;
+  max-width: 520px;
+  border-radius: var(--neu-radius);
+  padding: 1.25rem;
+}
+
+.winnings-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.winnings-modal-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.winnings-modal-close {
+  background: none;
+  border: none;
+  color: var(--neu-text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.winnings-modal-close:hover {
+  color: var(--neu-text);
+}
+
+.winnings-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.winnings-modal-actions-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-left: auto;
+}

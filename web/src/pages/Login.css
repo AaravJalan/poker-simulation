@@ -174,7 +174,7 @@
 }
 
 .login-back:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .login-card {
@@ -263,7 +263,7 @@
   color: var(--neu-accent);
   cursor: pointer;
   font-size: 0.9rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .link-btn:hover {

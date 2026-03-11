@@ -70,7 +70,18 @@ export default function LiveGame() {
     <div className="live-game-page">
       <header className="live-game-header">
         <h1>Live game</h1>
-        <Link to="/dashboard" className="neu-btn">Back</Link>
+        <div className="live-game-header-actions">
+          <button
+            type="button"
+            className="neu-btn neu-btn-primary"
+            onClick={() => {
+              setPlayers((prev) => [...prev, { id: genId(), name: `Player ${prev.length + 1}`, buyIn: 0, cashOut: 0 }])
+            }}
+          >
+            + Add player
+          </button>
+          <Link to="/dashboard" className="neu-btn">Back</Link>
+        </div>
       </header>
       <p className="live-game-desc">Track buy-ins and cash-outs. We calculate who pays whom.</p>
 
@@ -129,20 +140,6 @@ export default function LiveGame() {
             </button>
           </div>
         ))}
-      </div>
-
-      <div className="add-player-row">
-        <input
-          type="text"
-          className="neu-input"
-          placeholder="New player name"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
-        />
-        <button type="button" className="neu-btn neu-btn-primary" onClick={addPlayer}>
-          + Add player
-        </button>
       </div>
 
       {settlements.length > 0 && (

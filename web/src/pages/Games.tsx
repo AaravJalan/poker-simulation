@@ -137,7 +137,8 @@ export default function Games() {
         body: JSON.stringify({ user_id: user.id, user_name: user.name || user.email }),
       })
       const g = await res.json()
-      if (!res.ok) throw new Error(g.detail || 'Failed')
+      if (!res.ok) throw new Error(g?.detail || 'Failed')
+      if (!g?.id) throw new Error('Failed to create game (missing id)')
       loadGames()
       setGame(g)
       navigate(`/games/${g.id}`, { replace: true })
@@ -321,11 +322,14 @@ export default function Games() {
   }
 
   const handleLeaveGame = async () => {
-    if (!game || !leaveUserId || user?.id !== leaveUserId) return
+    if (!game || !leaveUserId || !user?.id) return
+    const isHost = game.host_id === user.id
+    const isMe = user.id === leaveUserId
+    if (!isHost && !isMe) return
     const cashOut = parseFloat(leaveCashOut)
     if (isNaN(cashOut) || cashOut < 0) return
-    const me = game.players?.find((p) => p.user_id === leaveUserId)
-    const buyIn = me?.total_buy_in ?? 0
+    const target = game.players?.find((p) => p.user_id === leaveUserId)
+    const buyIn = target?.total_buy_in ?? 0
     setLoading(true)
     setError('')
     try {
@@ -337,7 +341,7 @@ export default function Games() {
       const g = await res.json()
       if (!res.ok) throw new Error(g.detail || 'Failed')
       setGame(g)
-      if (addToWinnings && user?.id) {
+      if (addToWinnings && isMe) {
         await fetch(apiUrl('/api/winnings'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -631,13 +635,13 @@ export default function Games() {
                         + Add buy-in
                       </button>
                     )}
-                    {isMe && (
+                    {(isHost || isMe) && (
                       <button
                         type="button"
                         className="neu-btn small"
                         onClick={() => setLeaveUserId(p.user_id)}
                       >
-                        Leave game
+                        {isHost && !isMe ? 'Cash out player' : 'Leave game'}
                       </button>
                     )}
                   </div>
@@ -685,25 +689,29 @@ export default function Games() {
                 value={leaveCashOut}
                 onChange={(e) => setLeaveCashOut(e.target.value)}
               />
-              <label className="leave-add-winnings">
-                <input type="checkbox" checked={addToWinnings} onChange={(e) => setAddToWinnings(e.target.checked)} />
-                Add to winnings
-              </label>
-              {addToWinnings && (
-                <input
-                  type="number"
-                  step="0.25"
-                  min="0"
-                  className="neu-input"
-                  placeholder="Hours played"
-                  value={leaveHours}
-                  onChange={(e) => setLeaveHours(e.target.value)}
-                />
+              {leaveUserId === user.id && (
+                <>
+                  <label className="leave-add-winnings">
+                    <input type="checkbox" checked={addToWinnings} onChange={(e) => setAddToWinnings(e.target.checked)} />
+                    Add to winnings
+                  </label>
+                  {addToWinnings && (
+                    <input
+                      type="number"
+                      step="0.25"
+                      min="0"
+                      className="neu-input"
+                      placeholder="Hours played"
+                      value={leaveHours}
+                      onChange={(e) => setLeaveHours(e.target.value)}
+                    />
+                  )}
+                </>
               )}
               <div className="modal-actions">
                 <button type="button" className="neu-btn" onClick={() => setLeaveUserId(null)}>Cancel</button>
                 <button type="button" className="neu-btn neu-btn-primary" onClick={handleLeaveGame} disabled={loading}>
-                  Leave
+                  Cash out
                 </button>
               </div>
             </div>

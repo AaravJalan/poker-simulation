@@ -9,6 +9,7 @@ cd "$ROOT/python"
 if [ ! -d .venv ]; then python3 -m venv .venv; fi
 source .venv/bin/activate
 pip install -q -r requirements.txt 2>/dev/null || true
+pip install -q -r requirements-local.txt 2>/dev/null || true
 echo ""
 echo "  Poker Simulation: http://localhost:8000"
 echo ""

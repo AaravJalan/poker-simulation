@@ -11,6 +11,12 @@
   margin-bottom: 0.5rem;
 }
 
+.live-game-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .live-game-header h1 {
   margin: 0;
   font-size: 1.35rem;
@@ -105,16 +111,6 @@
   color: var(--neu-danger);
 }
 
-.add-player-row {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.add-player-row .neu-input {
-  flex: 1;
-}
-
 .settlements {
   margin-top: 1.5rem;
   padding: 1rem;
@@ -144,3 +140,4 @@
   .live-game-header { flex-direction: column; gap: 0.5rem; align-items: stretch; }
   .player-inputs { grid-template-columns: 1fr; }
 }
+

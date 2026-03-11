@@ -38,6 +38,7 @@ if _use_supabase:
         add_entry as winnings_add_entry,
         get_entries as winnings_get_entries,
         delete_entry as winnings_delete_entry,
+        # Supabase backend currently doesn't support update; fall back to delete+add in UI if needed.
     )
 else:
     from poker_sim.friends_db import (
@@ -74,4 +75,5 @@ else:
         add_entry as winnings_add_entry,
         get_entries as winnings_get_entries,
         delete_entry as winnings_delete_entry,
+        update_entry as winnings_update_entry,
     )

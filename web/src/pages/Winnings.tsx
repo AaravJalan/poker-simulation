@@ -20,6 +20,7 @@ export default function Winnings() {
   const [allEntries, setAllEntries] = useState<WinningsEntry[]>([])
   const [period, setPeriod] = useState<'all' | 'daily' | 'monthly' | 'yearly'>('all')
   const [showForm, setShowForm] = useState(false)
+  const [editing, setEditing] = useState<WinningsEntry | null>(null)
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().slice(0, 10))
   const [buyIn, setBuyIn] = useState('')
   const [cashOut, setCashOut] = useState('')
@@ -47,17 +48,19 @@ export default function Winnings() {
     if (!user?.id) return
     setLoading(true)
     try {
-      const res = await fetch(apiUrl('/api/winnings'), {
-        method: 'POST',
+      const payload = {
+        user_id: user.id,
+        session_date: sessionDate,
+        buy_in: parseFloat(buyIn) || 0,
+        cash_out: parseFloat(cashOut) || 0,
+        hours: parseFloat(hours) || 0,
+        notes: notes.trim(),
+      }
+      const isEdit = !!editing?.id
+      const res = await fetch(apiUrl(isEdit ? `/api/winnings/${editing!.id}` : '/api/winnings'), {
+        method: isEdit ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: user.id,
-          session_date: sessionDate,
-          buy_in: parseFloat(buyIn) || 0,
-          cash_out: parseFloat(cashOut) || 0,
-          hours: parseFloat(hours) || 0,
-          notes: notes.trim(),
-        }),
+        body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error('Failed to save')
       setBuyIn('')
@@ -66,12 +69,33 @@ export default function Winnings() {
       setNotes('')
       setSessionDate(new Date().toISOString().slice(0, 10))
       setShowForm(false)
+      setEditing(null)
       loadEntries()
     } catch {
       // ignore
     } finally {
       setLoading(false)
     }
+  }
+
+  const openNew = () => {
+    setEditing(null)
+    setSessionDate(new Date().toISOString().slice(0, 10))
+    setBuyIn('')
+    setCashOut('')
+    setHours('')
+    setNotes('')
+    setShowForm(true)
+  }
+
+  const openEdit = (e: WinningsEntry) => {
+    setEditing(e)
+    setSessionDate(e.session_date)
+    setBuyIn(String(e.buy_in ?? 0))
+    setCashOut(String(e.cash_out ?? 0))
+    setHours(String(e.hours ?? 0))
+    setNotes(e.notes || '')
+    setShowForm(true)
   }
 
   const deleteEntry = async (id: string) => {
@@ -133,133 +157,160 @@ export default function Winnings() {
         <h1>Poker winnings</h1>
         <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
       </header>
-      <div className="winnings-main">
-      <div className="winnings-filters">
-        {(['all', 'daily', 'monthly', 'yearly'] as const).map((p) => (
-          <button
-            key={p}
-            type="button"
-            className={`neu-btn ${period === p ? 'active' : ''}`}
-            onClick={() => setPeriod(p)}
-          >
-            {p.charAt(0).toUpperCase() + p.slice(1)}
-          </button>
-        ))}
-      </div>
-      <div className="winnings-stats neu-raised">
-        <div className="stat">
-          <span className="stat-label">Total profit</span>
-          <span className={`stat-value ${totalProfit >= 0 ? 'win' : 'loss'}`}>${totalProfit.toFixed(2)}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Total sessions</span>
-          <span className="stat-value">{totalSessions}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Total hours</span>
-          <span className="stat-value">{totalHours.toFixed(1)}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Profitable ratio</span>
-          <span className="stat-value">{profitableRatio.toFixed(0)}%</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Profit / hour</span>
-          <span className={`stat-value ${profitPerHour >= 0 ? 'win' : 'loss'}`}>${profitPerHour.toFixed(2)}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Total buy-ins</span>
-          <span className="stat-value">${totalBuyIn.toFixed(2)}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Total cash-out</span>
-          <span className="stat-value">${totalCashOut.toFixed(2)}</span>
-        </div>
-      </div>
-      <button type="button" className="neu-btn neu-btn-primary" onClick={() => setShowForm(!showForm)}>
-        {showForm ? 'Cancel' : '+ Add session'}
-      </button>
-      {showForm && (
-        <form onSubmit={addEntry} className="winnings-form neu-raised">
-          <div className="form-row">
-            <label>Date</label>
-            <input type="date" value={sessionDate} onChange={(e) => setSessionDate(e.target.value)} className="neu-input" required />
+      <div className="winnings-top">
+        <div className="winnings-top-left">
+          <div className="winnings-filters">
+            {(['all', 'daily', 'monthly', 'yearly'] as const).map((p) => (
+              <button
+                key={p}
+                type="button"
+                className={`neu-btn ${period === p ? 'active' : ''}`}
+                onClick={() => setPeriod(p)}
+              >
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </button>
+            ))}
           </div>
-          <div className="form-row">
-            <label>Buy-in ($)</label>
-            <input type="number" step="0.01" min="0" value={buyIn} onChange={(e) => setBuyIn(e.target.value)} className="neu-input" placeholder="0" />
-          </div>
-          <div className="form-row">
-            <label>Cash-out ($) — 0 allowed</label>
-            <input type="number" step="0.01" min="0" value={cashOut} onChange={(e) => setCashOut(e.target.value)} className="neu-input" placeholder="0" />
-          </div>
-          <div className="form-row">
-            <label>Hours played</label>
-            <input type="number" step="0.25" min="0" value={hours} onChange={(e) => setHours(e.target.value)} className="neu-input" placeholder="0" />
-          </div>
-          <div className="form-row">
-            <label>Notes</label>
-            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} className="neu-input" placeholder="Optional" />
-          </div>
-          <button type="submit" className="neu-btn neu-btn-primary" disabled={loading}>
-            {loading ? 'Saving…' : 'Save'}
-          </button>
-        </form>
-      )}
-      {deleteErr && <p className="winnings-error">{deleteErr}</p>}
-      <div className="winnings-list">
-        {entries.length === 0 ? (
-          <p className="empty-msg">No entries yet. Add a session to track your winnings.</p>
-        ) : (
-          entries.map((e) => (
-            <div key={e.id} className="winnings-item neu-raised">
-              <div className="item-date">{e.session_date}</div>
-              <div className="item-details">
-                Buy-in: ${e.buy_in.toFixed(2)} → Cash-out: ${e.cash_out.toFixed(2)}
-                {e.hours ? ` · ${e.hours}h` : ''}
-                <span className={`profit ${e.profit >= 0 ? 'win' : 'loss'}`}>
-                  {e.profit >= 0 ? '+' : ''}{e.profit.toFixed(2)}
-                </span>
-              </div>
-              {e.notes && <div className="item-notes">{e.notes}</div>}
-              <button type="button" className="delete-btn" onClick={() => deleteEntry(e.id)}>Delete</button>
+          <div className="winnings-stats neu-raised">
+            <div className="stat">
+              <span className="stat-label">Total profit</span>
+              <span className={`stat-value ${totalProfit >= 0 ? 'win' : 'loss'}`}>${totalProfit.toFixed(2)}</span>
             </div>
-          ))
+            <div className="stat">
+              <span className="stat-label">Total sessions</span>
+              <span className="stat-value">{totalSessions}</span>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Total hours</span>
+              <span className="stat-value">{totalHours.toFixed(1)}</span>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Profitable ratio</span>
+              <span className="stat-value">{profitableRatio.toFixed(0)}%</span>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Profit / hour</span>
+              <span className={`stat-value ${profitPerHour >= 0 ? 'win' : 'loss'}`}>${profitPerHour.toFixed(2)}</span>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Total buy-ins</span>
+              <span className="stat-value">${totalBuyIn.toFixed(2)}</span>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Total cash-out</span>
+              <span className="stat-value">${totalCashOut.toFixed(2)}</span>
+            </div>
+          </div>
+          <button type="button" className="neu-btn neu-btn-primary" onClick={openNew}>
+            + Add session
+          </button>
+          {deleteErr && <p className="winnings-error">{deleteErr}</p>}
+        </div>
+        {monthLabels.length > 0 && (
+          <div className="winnings-top-right">
+            <div className="winnings-graph neu-raised">
+              <h3>Profit over time</h3>
+              <div className="graph-line-wrap">
+                <svg className="graph-line-svg" viewBox="0 0 200 100" preserveAspectRatio="none">
+                  {cumulative.length > 1 && (
+                    <path
+                      d={cumulative.map((c, i) => {
+                        const x = (i / (cumulative.length - 1)) * 200
+                        const y = 90 - ((c.profit - minY) / rangeY) * 80
+                        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
+                      }).join(' ')}
+                      fill="none"
+                      stroke="var(--neu-accent)"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                  {minY < 0 && maxY > 0 && (
+                    <line x1="0" y1={90 - ((0 - minY) / rangeY) * 80} x2="200" y2={90 - ((0 - minY) / rangeY) * 80} stroke="var(--neu-text-muted)" strokeWidth="0.5" strokeDasharray="2" />
+                  )}
+                </svg>
+              </div>
+              <div className="graph-line-labels">
+                {monthLabels[0] && <span>{monthLabels[0]}</span>}
+                {monthLabels[monthLabels.length - 1] && <span>{monthLabels[monthLabels.length - 1]}</span>}
+              </div>
+            </div>
+          </div>
         )}
       </div>
-      </div>
-      {monthLabels.length > 0 && (
-        <div className="winnings-graph-wrap">
-          <div className="winnings-graph neu-raised">
-            <h3>Profit over time</h3>
-            <div className="graph-line-wrap">
-              <svg className="graph-line-svg" viewBox="0 0 200 100" preserveAspectRatio="none">
-                {cumulative.length > 1 && (
-                  <path
-                    d={cumulative.map((c, i) => {
-                      const x = (i / (cumulative.length - 1)) * 200
-                      const y = 90 - ((c.profit - minY) / rangeY) * 80
-                      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
-                    }).join(' ')}
-                    fill="none"
-                    stroke="var(--neu-accent)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                )}
-                {minY < 0 && maxY > 0 && (
-                  <line x1="0" y1={90 - ((0 - minY) / rangeY) * 80} x2="200" y2={90 - ((0 - minY) / rangeY) * 80} stroke="var(--neu-text-muted)" strokeWidth="0.5" strokeDasharray="2" />
-                )}
-              </svg>
+
+      {showForm && (
+        <div className="winnings-modal-overlay" role="dialog" aria-modal="true" aria-label="Session details" onClick={() => setShowForm(false)}>
+          <div className="winnings-modal neu-raised" onClick={(e) => e.stopPropagation()}>
+            <div className="winnings-modal-head">
+              <h3>{editing ? 'Edit session' : 'Add session'}</h3>
+              <button type="button" className="winnings-modal-close" onClick={() => setShowForm(false)} aria-label="Close">×</button>
             </div>
-            <div className="graph-line-labels">
-              {monthLabels[0] && <span>{monthLabels[0]}</span>}
-              {monthLabels[monthLabels.length - 1] && <span>{monthLabels[monthLabels.length - 1]}</span>}
-            </div>
+            <form onSubmit={addEntry} className="winnings-form">
+              <div className="form-row">
+                <label>Date</label>
+                <input type="date" value={sessionDate} onChange={(e) => setSessionDate(e.target.value)} className="neu-input" required />
+              </div>
+              <div className="form-row">
+                <label>Buy-in ($)</label>
+                <input type="number" step="0.01" min="0" value={buyIn} onChange={(e) => setBuyIn(e.target.value)} className="neu-input" placeholder="0" />
+              </div>
+              <div className="form-row">
+                <label>Cash-out ($)</label>
+                <input type="number" step="0.01" min="0" value={cashOut} onChange={(e) => setCashOut(e.target.value)} className="neu-input" placeholder="0" />
+              </div>
+              <div className="form-row">
+                <label>Hours played</label>
+                <input type="number" step="0.25" min="0" value={hours} onChange={(e) => setHours(e.target.value)} className="neu-input" placeholder="0" />
+              </div>
+              <div className="form-row">
+                <label>Notes</label>
+                <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} className="neu-input" placeholder="Optional" />
+              </div>
+              <div className="winnings-modal-actions">
+                {editing && (
+                  <button
+                    type="button"
+                    className="neu-btn"
+                    onClick={() => { deleteEntry(editing.id); setShowForm(false) }}
+                  >
+                    Delete
+                  </button>
+                )}
+                <div className="winnings-modal-actions-right">
+                  <button type="button" className="neu-btn" onClick={() => setShowForm(false)}>Cancel</button>
+                  <button type="submit" className="neu-btn neu-btn-primary" disabled={loading}>
+                    {loading ? 'Saving…' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}
+      <div className="winnings-records-wrap">
+        <h3 className="winnings-records-title">Records</h3>
+        <div className="winnings-list winnings-records">
+          {entries.length === 0 ? (
+            <p className="empty-msg">No entries yet. Add a session to track your winnings.</p>
+          ) : (
+            entries.map((e) => (
+              <button key={e.id} type="button" className="winnings-item neu-raised winnings-item-btn" onClick={() => openEdit(e)}>
+                <div className="item-date">{e.session_date}</div>
+                <div className="item-details">
+                  Buy-in: ${e.buy_in.toFixed(2)} → Cash-out: ${e.cash_out.toFixed(2)}
+                  {e.hours ? ` · ${e.hours}h` : ''}
+                  <span className={`profit ${e.profit >= 0 ? 'win' : 'loss'}`}>
+                    {e.profit >= 0 ? '+' : ''}{e.profit.toFixed(2)}
+                  </span>
+                </div>
+                {e.notes && <div className="item-notes">{e.notes}</div>}
+              </button>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   )
 }

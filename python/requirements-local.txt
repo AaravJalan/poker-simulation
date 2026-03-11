@@ -1,0 +1,3 @@
+# Local-only dependencies (not suitable for Vercel bundling)
+opencv-python-headless>=4.8.0
+

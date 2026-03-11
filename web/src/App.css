@@ -160,6 +160,10 @@
   text-align: center;
 }
 
+.control-group .neu-input.trials-input {
+  width: 6rem;
+}
+
 /* Results */
 .results-grid {
   display: grid;

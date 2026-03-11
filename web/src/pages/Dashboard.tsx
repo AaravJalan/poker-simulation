@@ -375,7 +375,7 @@ export default function Dashboard() {
             </div>
             <div className="control-group">
               <label>Trials</label>
-              <input type="number" min={10} max={500000} step={100} value={numTrials} onChange={(e) => setNumTrials(Number(e.target.value) || 10)} className="neu-input" />
+              <input type="number" min={10} max={500000} step={100} value={numTrials} onChange={(e) => setNumTrials(Number(e.target.value) || 10)} className="neu-input trials-input" />
             </div>
             <button type="button" className="neu-btn neu-btn-primary" onClick={runSimulation} disabled={loading || holeCards.length !== 2 || ![0, 3, 4, 5].includes(boardCards.length)}>
               {loading ? 'Running…' : 'Run simulation'}

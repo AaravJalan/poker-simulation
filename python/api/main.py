@@ -217,6 +217,20 @@ def winnings_delete(entry_id: str, user_id: str):
         raise
 
 
+@app.patch("/api/winnings/{entry_id}")
+def winnings_update(entry_id: str, req: WinningsEntryRequest):
+    try:
+        from poker_sim.db_router import winnings_update_entry
+        return winnings_update_entry(req.user_id, entry_id, req.session_date, req.buy_in, req.cash_out, req.notes, req.hours)
+    except ImportError:
+        raise HTTPException(status_code=501, detail="Update not supported on this backend")
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.exception("Winnings update failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/friends")
 def friends_list(user_id: str):
     try:
