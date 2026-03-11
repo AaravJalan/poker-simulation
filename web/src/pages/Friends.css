@@ -1,24 +1,17 @@
 .friends-page {
   padding: 1.5rem;
-  max-width: 500px;
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 @media (max-width: 480px) {
   .friends-page {
-    padding: 1rem;
+    padding: 1rem 0.75rem;
   }
 }
 
 .friends-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 1.5rem;
-}
-
-.friends-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
 }
 
 .friends-search {

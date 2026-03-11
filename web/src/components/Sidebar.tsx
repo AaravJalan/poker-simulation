@@ -60,7 +60,7 @@ export default function Sidebar({ onNav }: SidebarProps) {
           Simulator
         </NavLink>
         <NavLink to="/saved" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
-          My simulations
+          Past Simulations
         </NavLink>
         <NavLink to="/winnings" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
           Winnings
@@ -70,10 +70,10 @@ export default function Sidebar({ onNav }: SidebarProps) {
           {inboxCount > 0 && <span className="sidebar-badge" aria-label={`${inboxCount} pending request(s)`}>{inboxCount}</span>}
         </NavLink>
         <NavLink to="/hands" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
-          Hand hierarchy
+          Hand Hierarchy
         </NavLink>
         <NavLink to="/live-game" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
-          Live game
+          Live Game
         </NavLink>
         <NavLink to="/games" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={onNav}>
           Games
@@ -86,10 +86,10 @@ export default function Sidebar({ onNav }: SidebarProps) {
           onClick={toggleTheme}
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          {theme === 'dark' ? '☀️' : '🌙'} {theme === 'dark' ? 'Light' : 'Dark'}
+          {theme === 'dark' ? '☀️' : '🌙'} {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </button>
         <button type="button" className="sidebar-btn logout-btn" onClick={() => logout()}>
-          Log out
+          Log Out
         </button>
       </div>
     </aside>

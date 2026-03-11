@@ -43,9 +43,11 @@ export default function Saved() {
 
   return (
     <div className="saved-page">
-      <header className="saved-header">
-        <h1>My simulations</h1>
-        <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+      <header className="saved-header page-header">
+        <h1>Past Simulations</h1>
+        <div className="page-header-right">
+          <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+        </div>
       </header>
       {saved.length === 0 ? (
         <p className="empty-msg">No saved simulations yet. Run a simulation and click "Save to My Simulations".</p>

@@ -153,9 +153,11 @@ export default function Winnings() {
 
   return (
     <div className="winnings-page">
-      <header className="winnings-header" style={{ gridColumn: '1 / -1' }}>
-        <h1>Poker winnings</h1>
-        <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+      <header className="winnings-header page-header" style={{ gridColumn: '1 / -1' }}>
+        <h1>Poker Winnings</h1>
+        <div className="page-header-right">
+          <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+        </div>
       </header>
       <div className="winnings-top">
         <div className="winnings-top-left">

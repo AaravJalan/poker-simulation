@@ -15,24 +15,62 @@ const RANKINGS = [
 ]
 
 export default function HandHierarchy() {
+  const col1 = RANKINGS.filter((h) => h.rank <= 5)
+  const col2 = RANKINGS.filter((h) => h.rank > 5)
+
+  const renderCards = (desc: string) => {
+    const cards = (desc || '').split(/\s+/).filter(Boolean)
+    return (
+      <span className="hand-cards" aria-label={desc}>
+        {cards.map((c, i) => {
+          const suit = c.slice(-1)
+          const rank = c.slice(0, -1)
+          const isRed = suit === '♦' || suit === '♥'
+          return (
+            <span key={`${c}-${i}`} className={`mini-card-square ${isRed ? 'red' : 'black'}`}>
+              <span className="mini-card-rank">{rank}</span>
+              <span className="mini-card-suit">{suit}</span>
+            </span>
+          )
+        })}
+      </span>
+    )
+  }
+
   return (
     <div className="hand-hierarchy-page">
-      <header className="hand-hierarchy-header">
-        <h1>Hand hierarchy</h1>
-        <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+      <header className="hand-hierarchy-header page-header">
+        <h1>Hand Hierarchy</h1>
+        <div className="page-header-right">
+          <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+        </div>
       </header>
       <p className="hand-hierarchy-intro">Poker hand rankings from strongest to weakest. Use as a quick reference at the table.</p>
-      <div className="hand-hierarchy-list">
-        {RANKINGS.map((h) => (
-          <div key={h.rank} className="hand-hierarchy-item">
-            <span className="hand-rank">#{h.rank}</span>
-            <div className="hand-info">
-              <strong>{h.name}</strong>
-              <span className="hand-desc">{h.desc}</span>
-              <span className="hand-ex">{h.ex}</span>
+      <div className="hand-hierarchy-cols">
+        <div className="hand-hierarchy-col">
+          {col1.map((h) => (
+            <div key={h.rank} className="hand-hierarchy-item">
+              <span className="hand-rank">#{h.rank}</span>
+              <div className="hand-info">
+                <strong>{h.name}</strong>
+                <span className="hand-desc">{renderCards(h.desc)}</span>
+                <span className="hand-ex">{h.ex}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="hand-hierarchy-col">
+          {col2.map((h) => (
+            <div key={h.rank} className="hand-hierarchy-item">
+              <span className="hand-rank">#{h.rank}</span>
+              <div className="hand-info">
+                <strong>{h.name}</strong>
+                <span className="hand-desc">{renderCards(h.desc)}</span>
+                <span className="hand-ex">{h.ex}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

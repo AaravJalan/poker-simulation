@@ -117,6 +117,13 @@
 .card-btn.selected-hole.red,
 .card-btn.selected-board.red { color: rgba(255,255,255,0.95); }
 
+.card-spacer {
+  aspect-ratio: 2.5/3.5;
+  max-width: 48px;
+  min-width: 0;
+  min-height: 36px;
+}
+
 /* Controls row */
 .controls-row {
   display: flex;
@@ -162,6 +169,37 @@
 
 .control-group .neu-input.trials-input {
   width: 6rem;
+}
+
+/* Shared page header (title + back button aligned consistently) */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--neu-text);
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .page-header h1 {
+    font-size: 1.4rem;
+  }
 }
 
 /* Results */
@@ -280,13 +318,18 @@
 
 @media (max-width: 640px) {
   .card-picker-grid {
-    grid-template-columns: repeat(13, 1fr);
-    gap: 4px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
   }
   .card-btn {
-    max-width: 36px;
-    font-size: 0.65rem;
-    min-height: 32px;
+    max-width: 100%;
+    min-height: 46px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+  }
+  .card-spacer {
+    max-width: 100%;
+    min-height: 46px;
   }
   .results-grid {
     grid-template-columns: 1fr;
@@ -296,10 +339,13 @@
 
 @media (max-width: 380px) {
   .card-picker-grid {
-    gap: 3px;
+    gap: 5px;
   }
   .card-btn {
-    max-width: 32px;
-    font-size: 0.6rem;
+    min-height: 42px;
+    font-size: 0.8rem;
+  }
+  .card-spacer {
+    min-height: 42px;
   }
 }

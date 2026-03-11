@@ -128,7 +128,7 @@
 }
 
 .logout-btn {
-  color: var(--neu-text-muted);
+  color: var(--neu-text);
 }
 
 @media (max-width: 768px) {

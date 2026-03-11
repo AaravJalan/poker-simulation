@@ -7,21 +7,7 @@
 }
 
 .hand-hierarchy-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 1.5rem;
-}
-
-.hand-hierarchy-header h1 {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--neu-accent), var(--neu-accent-hover));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .hand-hierarchy-intro {
@@ -31,9 +17,16 @@
   line-height: 1.6;
 }
 
-.hand-hierarchy-list {
+.hand-hierarchy-cols {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.hand-hierarchy-col {
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
 }
 
@@ -84,11 +77,40 @@
 }
 
 .hand-desc {
-  font-size: 1.05rem;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-  letter-spacing: 0.08em;
+  font-size: 1rem;
   color: var(--neu-text);
   line-height: 1.4;
+}
+
+.hand-cards {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.mini-card-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--neu-bg);
+  box-shadow: 2px 2px 6px var(--neu-shadow-dark), -2px -2px 6px var(--neu-shadow-light);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.mini-card-square.red { color: var(--neu-danger); }
+.mini-card-square.black { color: var(--neu-text); }
+
+.mini-card-rank,
+.mini-card-suit {
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .hand-ex {
@@ -99,19 +121,12 @@
 }
 
 @media (max-width: 640px) {
-  .hand-hierarchy-list {
-    grid-template-columns: 1fr;
-  }
+  .hand-hierarchy-cols { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
   .hand-hierarchy-page {
     padding: 1rem;
-  }
-  .hand-hierarchy-header {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
   }
   .hand-hierarchy-item {
     flex-direction: row;

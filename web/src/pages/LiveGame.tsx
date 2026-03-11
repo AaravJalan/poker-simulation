@@ -68,9 +68,9 @@ export default function LiveGame() {
 
   return (
     <div className="live-game-page">
-      <header className="live-game-header">
-        <h1>Live game</h1>
-        <div className="live-game-header-actions">
+      <header className="live-game-header page-header">
+        <h1>Live Game</h1>
+        <div className="page-header-right live-game-header-actions">
           <button
             type="button"
             className="neu-btn neu-btn-primary"
@@ -80,7 +80,7 @@ export default function LiveGame() {
           >
             + Add player
           </button>
-          <Link to="/dashboard" className="neu-btn">Back</Link>
+          <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
         </div>
       </header>
       <p className="live-game-desc">Track buy-ins and cash-outs. We calculate who pays whom.</p>

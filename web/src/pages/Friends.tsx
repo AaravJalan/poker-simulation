@@ -150,9 +150,11 @@ export default function Friends() {
 
   return (
     <div className="friends-page">
-      <header className="friends-header">
+      <header className="friends-header page-header">
         <h1>Friends</h1>
-        <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+        <div className="page-header-right">
+          <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
+        </div>
       </header>
 
       {inbox.length > 0 && (

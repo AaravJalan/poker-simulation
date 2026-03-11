@@ -1,13 +1,17 @@
 .live-game-page {
-  padding: 1rem;
-  max-width: 100%;
+  padding: 1.5rem;
+  max-width: 920px;
   width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .live-game-page {
+    padding: 1rem 0.75rem;
+  }
 }
 
 .live-game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 0.5rem;
 }
 
@@ -18,8 +22,7 @@
 }
 
 .live-game-header h1 {
-  margin: 0;
-  font-size: 1.35rem;
+  /* sizing/color handled by shared .page-header */
 }
 
 .live-game-desc {

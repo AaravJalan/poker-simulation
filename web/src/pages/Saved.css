@@ -1,26 +1,18 @@
 .saved-page {
   min-height: 100vh;
-  padding: 2rem;
-  max-width: 700px;
+  padding: 1.5rem;
+  max-width: 920px;
   margin: 0 auto;
 }
 
 @media (max-width: 640px) {
   .saved-page {
-    padding: 1rem;
+    padding: 1rem 0.75rem;
   }
 }
 
 .saved-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 2rem;
-}
-
-.saved-header h1 {
-  font-size: 1.5rem;
-  margin: 0;
 }
 
 .saved-header a {

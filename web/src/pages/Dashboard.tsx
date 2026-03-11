@@ -65,7 +65,8 @@ export default function Dashboard() {
   const [holeCards, setHoleCards] = useState<number[]>([])
   const [boardCards, setBoardCards] = useState<number[]>([])
   const [numOpponents, setNumOpponents] = useState(1)
-  const [numTrials, setNumTrials] = useState(10000)
+  const [numTrials, setNumTrials] = useState(3000)
+  const [trialsSpecified, setTrialsSpecified] = useState(false)
   const [result, setResult] = useState<SimResult | null>(null)
   const [equityByStreet, setEquityByStreet] = useState<StreetData[] | null>(null)
   const [analyze, setAnalyze] = useState<AnalyzeResult | null>(null)
@@ -81,15 +82,37 @@ export default function Dashboard() {
   const [chatOpen, setChatOpen] = useState(false)
   const [apiOk, setApiOk] = useState<boolean | null>(null)
   const liveTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const [mobileCards, setMobileCards] = useState(false)
 
   useEffect(() => {
     fetch(apiUrl('/api/health')).then((r) => r.ok && r.json()).then((d) => setApiOk(d?.ok === true)).catch(() => setApiOk(false))
   }, [])
 
+  useEffect(() => {
+    const m = window.matchMedia('(max-width: 640px)')
+    const update = () => setMobileCards(m.matches)
+    update()
+    m.addEventListener?.('change', update)
+    return () => m.removeEventListener?.('change', update)
+  }, [])
+
   const selectedSet = new Set([...holeCards, ...boardCards])
 
-  const LIVE_TRIALS = 3000
+  const LIVE_TRIALS = trialsSpecified ? Math.min(numTrials, 3000) : 1000
   const allCards = [...holeCards, ...boardCards]
+
+  const cardButtons = (() => {
+    if (!mobileCards) return Array.from({ length: 52 }, (_, i) => i as number | null)
+    // Mobile: keep suits from spilling across rows -> 7 then 6 (+1 spacer) per suit (7-6-7-6-7-6-7-6)
+    const out: Array<number | null> = []
+    for (let suit = 0; suit < 4; suit++) {
+      const base = suit * 13
+      for (let r = 0; r < 7; r++) out.push(base + r)
+      for (let r = 7; r < 13; r++) out.push(base + r)
+      out.push(null) // spacer to complete the 7-wide row (6 + 1 spacer)
+    }
+    return out
+  })()
 
   const fetchLive = useCallback(async () => {
     if (allCards.length < 2) return
@@ -350,7 +373,8 @@ export default function Dashboard() {
             setScanning={setScanning}
           />
           <div className="card-picker-grid">
-            {Array.from({ length: 52 }, (_, i) => i).map((card) => {
+            {cardButtons.map((card, idx) => {
+              if (card == null) return <div key={`sp-${idx}`} className="card-spacer" aria-hidden="true" />
               const { rank: r, suit: s } = cardLabel(card)
               const selected = selectedSet.has(card)
               const disabled = !selected && holeCards.length === 2 && boardCards.length === 5
@@ -375,7 +399,18 @@ export default function Dashboard() {
             </div>
             <div className="control-group">
               <label>Trials</label>
-              <input type="number" min={10} max={500000} step={100} value={numTrials} onChange={(e) => setNumTrials(Number(e.target.value) || 10)} className="neu-input trials-input" />
+              <input
+                type="number"
+                min={10}
+                max={500000}
+                step={100}
+                value={numTrials}
+                onChange={(e) => {
+                  setTrialsSpecified(true)
+                  setNumTrials(Number(e.target.value) || 10)
+                }}
+                className="neu-input trials-input"
+              />
             </div>
             <button type="button" className="neu-btn neu-btn-primary" onClick={runSimulation} disabled={loading || holeCards.length !== 2 || ![0, 3, 4, 5].includes(boardCards.length)}>
               {loading ? 'Running…' : 'Run simulation'}

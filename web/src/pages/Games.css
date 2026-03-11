@@ -1,7 +1,14 @@
 .games-page {
-  padding: 1rem;
-  max-width: 100%;
+  padding: 1.5rem;
+  max-width: 920px;
   width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .games-page {
+    padding: 1rem 0.75rem;
+  }
 }
 
 .games-header {
@@ -26,7 +33,7 @@
 
 .games-header h1 {
   margin: 0;
-  font-size: 1.35rem;
+  /* sizing/color handled by shared .page-header */
 }
 
 .games-header-actions {

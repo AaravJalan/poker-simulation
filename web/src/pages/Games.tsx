@@ -454,9 +454,11 @@ export default function Games() {
   if (isJoinView) {
     return (
       <div className="games-page">
-        <header className="games-header">
-          <h1>Join game</h1>
-          <Link to="/games" className="neu-btn">← Back</Link>
+        <header className="games-header page-header">
+          <h1>Join Game</h1>
+          <div className="page-header-right">
+            <Link to="/games" className="neu-btn">← Back</Link>
+          </div>
         </header>
         {!joinGame ? (
           <div className="join-code-form neu-raised">
@@ -505,7 +507,7 @@ export default function Games() {
 
     return (
       <div className="games-page">
-        <header className="games-header">
+        <header className="games-header page-header">
           <div className="games-header-left">
             {editingName ? (
               <div className="game-rename-row">
@@ -544,9 +546,9 @@ export default function Games() {
         <div className="game-add-section game-add-narrow">
         {isHost && game.status === 'active' && (
           <div className="add-players-options neu-raised">
-            <h3>Invite players (host only)</h3>
+            <h3>Invite players</h3>
             <div className="add-option">
-              <label>By PokerID (email) — sends invite</label>
+              <label>By email</label>
               <div className="add-option-row">
                 <input
                   type="email"
@@ -580,7 +582,7 @@ export default function Games() {
 
         {isHost && friends.length > 0 && game.status === 'active' && (
           <div className="add-friends neu-raised">
-            <h3>Invite friends to game (they must accept)</h3>
+            <h3>Invite friends to game</h3>
             {friends
               .filter((f) => !game.players?.some((p) => p.user_id === f.id))
               .map((f) => (
@@ -590,7 +592,7 @@ export default function Games() {
                     checked={selectedFriends.has(f.id)}
                     onChange={() => toggleFriend(f.id)}
                   />
-                  {f.name} ({f.email})
+                  {f.name}{f.email ? ` (${f.email})` : ''}
                 </label>
               ))}
             {selectedFriends.size > 0 && (
@@ -751,7 +753,7 @@ export default function Games() {
   // Games list
   return (
     <div className="games-page">
-      <header className="games-header">
+      <header className="games-header page-header">
         <h1>Games</h1>
         <Link to="/dashboard" className="neu-btn">Back to simulator</Link>
       </header>
@@ -809,7 +811,7 @@ export default function Games() {
             <div key={g.id} className="game-item-wrap">
               <Link to={`/games/${g.id}`} className="game-item neu-raised">
                 <span className="game-code">{g.display_name || g.join_code}</span>
-                <span className={`game-status ${g.status}`}>{g.status}</span>
+                <span className={`game-status ${g.status}`}>{g.status === 'ended' ? 'completed' : g.status}</span>
                 {g.created_at && (
                   <span className="game-date">{new Date(g.created_at).toLocaleDateString()}</span>
                 )}
